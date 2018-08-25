@@ -1,6 +1,6 @@
 Linux Commands
 ==========================================
-
+ref: http://itscom.org/archives/2450
 #* chmod
 파일의 권한 변경
 -R, 서브 디렉토리 파일 모두 변경
