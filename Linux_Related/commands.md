@@ -49,8 +49,9 @@ echo date #output: Sat Aug 25 17:55:38 DST 2018
 %u, date of week(1..7) 1이 월요일
 
 date -s '2013-04-17 22:50:00'
+date --date[or just -d]="1 day ago" '+%Y/%m/%d' => 커맨드 실행일 기준 yesterday 값을 포맷에 맞게 출력
 
-#dfdf
+#df
 파일 시스템 디스크 사용량 출력
 -h 사람이 읽기 좋은 단위로 출력
 -i inode 정보 출력
@@ -264,3 +265,17 @@ find . -type d -print0 | xargs -0 chmod
 w -i
  19:47:23 up  3:09,  0 users,  load average: 0.52, 0.58, 0.59
 USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+
+# scp
+    * 원격 보안복사
+    * example: 192.168.1.2서버로 이동하여 /home/kd 디렉토리를 현재 local의 위치로 recursive copy
+    scp -r root@192.168.1.2:/home/kd ./
+
+# tr
+    * 문자열의 특정 문자를 삭제하거나 변환
+    * options
+        -d "SET1" SET1과 일치하는 패턴 삭제
+    * example
+    whoami | tr "a-z" "A-Z" => 문자열의 소문자를 대문자로 변환
+    date | tr -d "a-z" => 소문자 a-z 삭제
+    
