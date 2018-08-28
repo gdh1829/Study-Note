@@ -1,26 +1,26 @@
 Linux Commands
 ==========================================
 ref: http://itscom.org/archives/2450
-#* chmod
+# chmod
 파일의 권한 변경
 -R, 서브 디렉토리 파일 모두 변경
 
 chmod 744 /scripts/ko.sh
 
-#* cp
+# cp
 파일과 디렉토리 복사
 -f, 파일 존재시 강제로 override
 -R, 반복되는 디렉토리에 대한 적용
 
 cp ko.txt ~/
 
-#* crontab
+# crontab
 스케줄러
 
 crontab -l
 crontab -e
 
-#* cut
+# cut
 필드 골라보기 명령어로 awk '{print $N}'과 비슷하지만 더 간단하게 사용 가능
 -c, 문자 선택
 -d, 기본 구분값 TAB 대신 구분자
@@ -37,7 +37,7 @@ echo "/home:[backup]" | cut -d: -f2 #output: [backup]
 * uname -a 결과값의 첫번째와 세번재 필드 출력
 uname -a | cut -d' ' -f1,3 #output: Linux 4.4.0-17134-Microsoft
 
-#* date
+# date
 날짜 출력 또는 설정
 echo date #output: Sat Aug 25 17:55:38 DST 2018
 
@@ -51,7 +51,7 @@ echo date #output: Sat Aug 25 17:55:38 DST 2018
 date -s '2013-04-17 22:50:00'
 date --date[or just -d]="1 day ago" '+%Y/%m/%d' => 커맨드 실행일 기준 yesterday 값을 포맷에 맞게 출력
 
-#df
+# df
 파일 시스템 디스크 사용량 출력
 -h 사람이 읽기 좋은 단위로 출력
 -i inode 정보 출력
@@ -60,7 +60,7 @@ date --date[or just -d]="1 day ago" '+%Y/%m/%d' => 커맨드 실행일 기준 ye
 df -h
 df -Th
 
-#echo
+# echo
 인수로 지정된 문자열을 출력
 -e 문자열에서 역슬래쉬와 조합이되는 이스케이프 문자 함께 사용(\n: 개행문자, \t: 탭)
 -n 마지막에 따라오는 개행문자를 출력하지 않는다
@@ -76,14 +76,14 @@ output:
 Hello
 World
 
-#env
+# env
 환경변수 보기
 
-#expr
+# expr
 수식연산 
 expr 3 + 5
 
-#find
+# find
 파일 및 디렉토리 검색
 * cgi 파일 중 "문자"를 포함하는 파일 출력
 find ./ -type f -name *.cgi -exec grep "문자" {} \; -print
@@ -98,7 +98,7 @@ find /home/abc -type f -mmin +3 -print | grep 'doc\|pdf'
 * 2개 이상 디렉토리에서 7z파일 검색
 find /back/192.*.10 /back/192.*.20 -name "*_1803*.7z"
 
-#grep
+# grep
 문자 패턴 매치
 -c 검색결과 총 행수를 출력
 -i ignore case-sensitive
@@ -122,18 +122,18 @@ echo '/data/bk/10.1.1.2' | grep -o '/' | wc -w
 ps -ef | grep "ph[p]"
 w | grep -v 'tty1'
 
-#free
+# free
 메모리 사용량 출력
 free -lm
 
-#head
+# head
 파일의 앞 부분부터 원하는 행을 출력
 csv로그와 같이 데이터 사이즈가 너무 큰 경우. 윈도우즈에서 파일 오픈시 시간이 많이 걸린다. 특히나 네트워크 환경에서는.
 이런 경우 head를 이용하면 간편하게 원하는 부분만 빠르게 확인 가능
 
 head -3 smb.conf
 
-#history
+# history
 유저가 사용한 명령어 히스토리를 보여준다.
 이벤트 지시자 !를 함께 사용하여 히스토리 검색 실행 가능
 
@@ -144,35 +144,35 @@ head -3 smb.conf
 history | more
 history 10
 
-#ifconfig
+# ifconfig
 네트워크 인터페이스 설정
 
 ifconfig eth0
 
-#ip
+# ip
 네트워크 인터페이스 설정 명령어
 
 ip addr
 ip link set eth0 up
 ip addr add 192.168.11.11 dev eth0
 
-#kill
+# kill
 프로세스 종료
 -9 강제 종료
 
 kill -9 1167
 
-#killall
+# killall
 프로세스 이름으로 종료
 
 killall httpd
 
-#ln
+# ln
 파일간 링크 생성
 
 ln -s /usr/local/mysql/bin/mysql /usr/bin/
 
-#ls
+# ls
 파일 리스트 출력
 -a 모든파일(.으로 시작하는 파일 포함) 출력
 -C 한 줄에 여러 정보 출력
@@ -182,18 +182,18 @@ ln -s /usr/local/mysql/bin/mysql /usr/bin/
 -t 수정시간으로 정렬
 --time-style=long-iso 년도 표기
 
-#mkdir
+# mkdir
 디렉토리 생성
 -P 상위 디렉토리 없어도 생성
 
 mkdir -P /home/ko/wwww
 
-#mount
+# mount
 파일시스템 마운트
 
 mount dev/mapper/sdisk/data
 
-#mv
+# mv
 파일 이동하기
 -b 백업
 -u 목적지 파일 보다 최신 파일만 복사
@@ -201,7 +201,7 @@ mount dev/mapper/sdisk/data
 
 mv -uv ./* /home/ab/
 
-#netstat
+# netstat
 네트워크 상태 출력
 -r 커널 라우팅 테이블 출력
 -s 프로토콜별 상태 출력
@@ -209,29 +209,29 @@ mv -uv ./* /home/ab/
 
 netstat -an | grep "LISTEN"
 
-#nice
+# nice
 프로그램의 우선순위 지정
 범위: -20(우선순위 높음) ~ 19(우선순위 낮음)
 
 nice -n 19 /scripts/backup.sh
 
-#nohup
+# nohup
 백그라운드로 쉘 실행
 쉘 커맨드 끝에 & 를 넣은 것과 같음
 
-#pgrep
+# pgrep
 실행중인 프로세스 찾기
 -l PID와 함께 일치하는 프로세스의 이름 출력
 -f -l 옵션과 함께 사용하면 명령어의 경로도 출력
 -n 패턴과 일치하는 프로세스의 가장 최근 PID 출력
 -x 패턴과 정확하게 일치되는 프로세스만 출력
 
-#pkill
+# pkill
 특정 프로세스 kill
 -n 패턴과 일치하는 프로세스의 가장 최근에 실행된 프로세스 하나만 종료
 -x 패턴과 정확하게 일치하는 프로세스만 종료
 
-#ping
+# ping
 네트워크 핑 점검
 
 ping -c 3 192.168.11.11
