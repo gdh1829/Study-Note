@@ -278,4 +278,20 @@ USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
     * example
     whoami | tr "a-z" "A-Z" => 문자열의 소문자를 대문자로 변환
     date | tr -d "a-z" => 소문자 a-z 삭제
+
+# tail
+    * 파일의 마지막 부분 출력.
+    * 로그를 보고 싶을 때 보통 사용. 실시간 보기가 가능한 옵션 때문.
+    * options
+        -f: 파일의 마지막 10라인을 실시간 출력
+        -F: 파일의 실시간 변동을 보여주되 로그 파일처럼 특정 시간이 지난 후 파일이 변하게 되면 새로운 파일을 오픈하여 보여줌. 
+            다음 파일을 열기 위해 또 다른 커맨드가 필요 없음
+        -n: n만큼의 라인을 출력
+        -n+n: 마지막 줄이 아니라 첫번째 줄부터 시작해 n 번째 라인 이후부터 출력
+        --byte={number value}: 입력 숫자 값 사이즈 만큼의 내용을 출력
+    * example
+    tail -n 20 sample.log => 파일 끝의 마지막 20줄 출력
+    tail -n +20 sample.log => 20번째 줄 이후부터 출력
+    tail -f sample.log => 실시간 출력(모니터링)
+
     
