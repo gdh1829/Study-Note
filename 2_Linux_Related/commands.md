@@ -1,11 +1,19 @@
 Linux Commands
 ==========================================
 ref: http://itscom.org/archives/2450
-# chmod
-파일의 권한 변경
--R, 서브 디렉토리 파일 모두 변경
 
-chmod 744 /scripts/ko.sh
+# chmod
+    * 파일의 권한 변경
+    * description
+        ls -l로 디렉토리를 출력해보면 아래와 같이 출력된다.
+        [ drwxr-xr-x  2  root  root  4096 Apr 22 16:59 conory ]
+        위의 의미는 무엇일까?
+        
+    * options
+        -R, 서브 디렉토리 파일 모두 변경
+    * sample
+
+        chmod 744 /scripts/ko.sh
 
 # cp
 파일과 디렉토리 복사
