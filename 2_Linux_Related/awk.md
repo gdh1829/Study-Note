@@ -83,6 +83,8 @@ $ last | awk '$1 =="root" && $3 != "boot" {print}'
     root     pts/0        192.168.11.6     Tue Jan 20 09:03   still logged in
     root     tty1                          Tue Jan 20 09:02   still logged in
     root     pts/0        192.168.11.6     Tue Jan 20 01:02 - down   (00:24)
+    root     tty1                          Tue Jan 20 09:02   still logged in
+    root     pts/0        192.168.11.6     Tue Jan 20 01:02 - down   (00:24)
 
 $ df -h | awk '/dev/ {print int($3/$2*100)}'
     /home 파티션의 사용 비율을 % 없이 정수표현 하고 싶을 때
@@ -90,6 +92,10 @@ $ df -h | awk '/dev/ {print int($3/$2*100)}'
     Filesystem      Size  Used Avail Use% Mounted on
     rootfs          238G   83G  155G  35% /
     none            238G   83G  155G  35% /dev
+
+$ 비교 표현
+    $ awk '$3 > 7000{print $1, $2}' 
+    세번째 컬럼의 값을 비교하고 참인 경우 컬럼1과 2만을 출력한다.
 
 
 
