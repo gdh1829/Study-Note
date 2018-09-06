@@ -302,4 +302,8 @@ USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
     tail -n +20 sample.log => 20번째 줄 이후부터 출력
     tail -f sample.log => 실시간 출력(모니터링)
 
+# source
+    * 지정한 소스파일 또는 함수를 실행시킴
+    * 수정된 코드를 바로 적용하여 실행시키고자 할 때 사용됨
+
     
