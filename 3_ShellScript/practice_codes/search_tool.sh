@@ -30,33 +30,30 @@ for i in ${resource_choices[@]}; do
         if [ $i == ${!j} ]; then
             isOk=true
             selectedResourceNameList=("${selectedResourceNameList[@]}" $j)
+            break
         fi
     done
     if [ "$isOk" == "false" ] ; then
         echo "$i is an wrong input. Process is closed."
-        exit;
+        exit
     fi
 done
 
-index=0
-while [ $index -lt ${#selectedResourceNameList[@]} ]; do
-    echo -e "Minimum ${selectedResourceNameList[($index)]} number: \c"
-    read min_${resource_choices[($index)]}
-    echo -e "Maximum ${selectedResourceNameList[($index)]} number: \c"
-    read max_${resource_choices[($index)]}
-    index+=1;
+for (( i=0; i<${#selectedResourceNameList[@]}; i++ )); do
+    echo -e "Minimum ${selectedResourceNameList[($i)]} number: \c"
+    read min_${resource_choices[($i)]}
+    echo -e "Maximum ${selectedResourceNameList[($i)]} number: \c"
+    read max_${resource_choices[($i)]}
 done
 
 # $1 field_column_number
 function getMin() {
-    local tmp="";
-    tmp="min_$1";
+    local tmp="min_$1";
     echo ${!tmp};
 }
 # $1 field_column_number
 function getMax() {
-    local tmp="";
-    tmp="max_$1";
+    local tmp="max_$1";
     echo ${!tmp};
 }
 
@@ -65,13 +62,14 @@ isMatched="false"
 function doSearch() {
     for resource_field in ${resource_choices[@]}; do
         resource_count=$(echo $1 | cut -d ',' -f$resource_field)
-        if [ $resource_count -ge `getMin $resource_field` -a $resource_count -le `getMax $resource_field` ]; then
-            isMatched="true"
-            continue;
-        else
-            isMatched="false"
-            break;
+        if [ ! -z $resource_count ]; then
+            if [ $resource_count -ge `getMin $resource_field` -a $resource_count -le `getMax $resource_field` ]; then
+                isMatched="true"
+                continue;
+            fi
         fi
+        isMatched="false"
+        break
     done
 }
 
@@ -79,9 +77,11 @@ echo -e "Searching matched data starts............"
 
 for i in $(ls ../../999_samples_for_testing/resource-count_P*.csv); do
     line=$(grep --regexp "$date" $i)
-    doSearch $line
-    if [ "$isMatched" == "true" ]; then
-        echo -e "$i"
+    if [ $? -eq 0 ]; then
+        doSearch $line
+        if [ "$isMatched" == "true" ]; then
+            echo -e "$i"
+        fi
     fi
     isMatched="false"
 done
