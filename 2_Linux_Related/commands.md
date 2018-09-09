@@ -2,6 +2,14 @@ Linux Commands
 ==========================================
 ref: http://itscom.org/archives/2450
 
+# cat /etc/*issue* 
+# cat /etc/issue
+# cat /etc/redhat-release
+    * 리눅스 OS버전 확인
+
+# uname -a
+    * 커널 정보 확인
+
 # chmod
     * 파일의 권한 변경
     * description

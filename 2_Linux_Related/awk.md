@@ -1,20 +1,12 @@
-awk and sed
-===========================
+# awk
+- awk는 유닉스에서 처음 개발된 스크립트 언어.
+- 텍스트 형태로 되어있는 데이터를 필드로 구분하여 처리하는 기능을 기본으로 한다.
+- 주로 패턴 검색과 조작을 통해 레포트를 만드는 등의 작업에 사용된다.
+- Read: awk는 input stream(file, pipe, or stdin)으로부터 하나의 라인을 읽고 메모리에 저장한다.
+- Execute: 모든 awk 커맨드는 input에 대하여 순차적으로 적용한다. 기본적으로 awk는 모든 line에 대해 커맨드를 실행한다. 이를 pattern을 제공함으로써 제한할 수도 있다.
+- Repeat: 이 과정은 파일의 끝에 다다를 때까지 반복된다.
 
-awk는 유닉스에서 처음 개발된 스크립트 언어.
-텍스트 형태로 되어있는 데이터를 필드로 구분하여 처리하는 기능을 기본으로 한다.
-주로 패턴 검색과 조작을 통해 레포트를 만드는 등의 작업에 사용된다.
-
-Read
-awk는 input stream(file, pipe, or stdin)으로부터 하나의 라인을 읽고 메모리에 저장한다.
-
-Execute
-모든 awk 커맨드는 input에 대하여 순차적으로 적용한다. 기본적으로 awk는 모든 line에 대해 커맨드를 실행한다. 이를 pattern을 제공함으로써 제한할 수도 있다.
-
-Repeat
-이 과정은 파일의 끝에 다다를 때까지 반복된다.
-
-* Syntax
+## Syntax
 awk [option] '[pattern] {action}' filename
     * BEGIN block
         - BEGIN {awk-command}
@@ -32,17 +24,86 @@ awk [option] '[pattern] {action}' filename
         - END {awk-commands}
         - BEGIN과 반대로 END는 awk 프로그램의 끝에 실행된다.
         - END는 keyword이기 때문에 upper-case로 쓴다.
-        - optional syntax
+        - optional 
 
-* operator
-=   +=   -=  *=   /=   %=    배정연산자
-+   –   *   /   %   ++   —   산술연산자
-||   &&   !                  논리연산자(OR, AND, NOT)
->   >=   <   <=   ==   !=    비교연산자
-v ~p                         변수 v가 패턴 P에 부합되면 참
-v !~p                        변수 v가 패턴 P에 부합되지 않으면 참
+## Pattern
+    BEGIN     입력파일을 읽어들이기 전 제시되는 문자열을 실행
+    END       awk가 모든 입력을 처리한 후 옆에 제시되는 문자열을 실행
+    /문자열/   문자열과 일치하는 라인을 찾아 액션을 실행
 
-* options
+## Built-in Varibales
+    * $0
+        - entire input record
+    * $n
+        - FS에 의해 분리된 현재의 레코드에서 n번째 필드
+    * ARGV        
+        - 커맨드 라인 arguments를 저장해두고 있는 array
+        - Valid Range is from 0 to ARGC-1
+        - awk 'BEGIN {for (i=0; i<ARGC-1; i++) {printf "ARGV[%d] = %s\n", i, ARGV[i]})' a b c
+        - output:
+            ARGV[0] = awk
+            ARGV[1] = one
+            ARGV[2] = two
+            ARGV[3] = three
+    * ARGC        커맨드 라인에 제공된 args의 수를 나타낸다.
+        awk 'BEGIN {print "Arguments =", ARGC} a b c'
+        output: 4
+        `why not 3 but 4 ? ARGV[0] 값으로 무조건 awk가 들어가기 때문에`
+    * CONVFMT
+        - conversion format for number
+        - default value is %.6g
+    * ENVIRON
+        - associative array of environment variables
+        - env 커맨드를 통해 나타나는 환경변수들을 지정하면 해당 값을 출력
+        - awk 'BEGIN { print ENVIRON["USER"]}'
+    * FILENAME
+        - 현재 처리되고 있는 입력 파일의 이름
+        - awk 'END {print FILENAME}' marks.txt
+    * FS
+        - input field seperator
+        - default value is space
+        - -F 옵션을 통해서 필드 분리 문자를 변경할 수 있음
+        - awk 'BEGIN {print "FS = " FS}' | cat -vte
+    * OFS
+        - FS와 기본적으로 같으나 OFS는 Output 필드에 대한 분리 문자이다.
+        - default value is space
+    * RS
+        - input record seperator
+        - default value is newline
+    * NR
+        - 현재 레코드(행)의 번호
+        - echo -e "One Two\nOne Two Three\nOne Two Three Four" | awk 'NR < 3'
+            2번째 행 까지만 출력
+            output:
+                One Two
+                One Two Three
+    * FNR
+        - NR과 같지만 현재의 작업 중인 파일에 대해서만 유효범위를 갖는다.
+        - 즉, NR이용하여 멀티 파일을 실행할 경우 NR의 행 번호가 계속 쌓여가지만, FNR의 경우 파일 단위로 다시 reset된다.
+    * NF
+        - 현재 레코드(행)의 필드의 갯수 
+        - echo -e "One Two\nOne Two Three\nOne Two Three Four" | awk 'NF > 2'
+            필드가 2개 이상인 경우만 출력
+            output:
+                One Two Three
+                One Two Three Four
+    * ORS
+        - output record seperatior를 나타낸다
+        - default value는 newline
+    * RLENGTH
+        - match function과 match되는 string의 length를 나타낸다.
+        - AWK의 match function은 input-string으로 주어진 문자열에 대하여 검색을 실행한다.
+        - awk 'BEGIN { if (match("One Two Three", "re")) { print RLENGTH } }'
+          output: 2
+
+## operator
+    =   +=   -=  *=   /=   %=    배정연산자
+    +   –   *   /   %   ++   —   산술연산자
+    ||   &&   !                  논리연산자(OR, AND, NOT)
+    >   >=   <   <=   ==   !=    비교연산자
+    v ~p                         변수 v가 패턴 P에 부합되면 참
+    v !~p                        변수 v가 패턴 P에 부합되지 않으면 참
+## options
     * -f : awk 형식의 파일 실행 옵션
         - awk -f command.awk sample.txt
         - command.awk 파일의 내용이 {print} 라고 되어 있다면, awk는 마치 sample.txt에 대하여 기존 body block을 실행하듯 command.awk의 내용을 읽어들여 실행한다.
@@ -68,7 +129,8 @@ v !~p                        변수 v가 패턴 P에 부합되지 않으면 참
         - 모든 gawk-specific extentions를 disabled 시킨다.
     * --version
         - awk의 버전을 출력
-* Action
+
+## Action
     * print
     * printf
     * if (expr) statement else statement
@@ -80,18 +142,9 @@ v !~p                        변수 v가 패턴 P에 부합되지 않으면 참
     * next
     * exit
 
-* Variables already assigned
-    * 변수        내용
-    * FILENAME    현재 처리되고 있는 입력 파일의 이름
-    * FS          입력 필드 분리문자
-    * NR          현재 레코드(행)의 번호
-    * NF          현재 레코드(행)의 필드의 갯수
-    * OFS         출력되는 필드의 분리문자
-    * $0          all columns
-    * $1 ~ $숫자  (띄어쓰기 기준) 컬럼 
 
-* test samples
-
+## test samples
+```bash
 $ awk 'BEGIN{printf "date\tcompany count\ttotal user\tlogged user\n"} {print}' re
 source-count_P000001.cs
     - awk는 BEGIN block을 먼저 실행하고서 body block을 stdin에 대하여 stdin의 끝에 다다를때까지 실행하게 된다.
@@ -166,6 +219,7 @@ $ Printing Lines with More than 18 Characters
     awk는 해당 string의 길이를 return하는 built-in length function을 제공한다. $0 변수는 라인 전체를 저장한다.
     body block이 없을 때에는 default action이 취해지는데, print action이 이에 해당한다. 
     그러므로 만약 해당 라인이 18 characters 초과면, 비교 연산이 true가 되고 라인이 출력되는 것이다.
+```
 
 
 
