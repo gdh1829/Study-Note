@@ -287,6 +287,13 @@ USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
     * example: 192.168.1.2서버로 이동하여 /home/kd 디렉토리를 현재 local의 위치로 recursive copy
     scp -r root@192.168.1.2:/home/kd ./
 
+# rsync
+    * 원격 서버와 디렉토리를 sync 시켜줌
+    * 사용법은 scp와 비슷
+    * rsync -chavzP --stats {location1} {location2}
+    * location1 => sync 시키고자 하는 데이터가 있는 디렉토리 또는 파일
+    * location2 => sync를 받는 디렉토리 또는 파일
+
 # tr
     * 문자열의 특정 문자를 삭제하거나 변환
     * options
