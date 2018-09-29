@@ -1,6 +1,7 @@
 ## R data type
-number 
-character: '' or ""
+numeric 
+character
+boolean
 
 ## Declare variables and insert values
 
