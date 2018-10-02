@@ -11,7 +11,7 @@ activity=12
 
 echo -e "Insert Specific Date(ex. 2018/08/08) If nothing inserted, yesterday will be assigned: \c"
 read date
-[ -n date ] && date=`date --date="1 day ago" +%Y/%m/%d`
+[ -z $date ] && date=`date --date="1 day ago" +%Y/%m/%d`
 echo "$date is set as target date"
 
 echo -e "What resource do you want to refer to?"
