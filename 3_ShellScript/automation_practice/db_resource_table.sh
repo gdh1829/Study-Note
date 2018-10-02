@@ -13,7 +13,7 @@ DB10="Db10"
 
 echo -e "Insert target date(format ex. 20180909). If you enter nothing, yesterday will be automatically assigned: \c"
 read date
-[ -n date ] && date=`date --date="1 day ago" +%Y%m%d`
+[ -z $date ] && date=`date --date="1 day ago" +%Y%m%d`
 echo "$date is set as target date"
 
 table_head=`head -n1 /home/aggregate/hrbc-system-report/logs/daily-report/resource-count/hrbc-daily-resource-count-report_$DB1.csv`
