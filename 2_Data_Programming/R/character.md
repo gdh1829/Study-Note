@@ -1,5 +1,7 @@
-# character
+character
+=====================
 
+```R
 x <- character()
 x2 <- ""
 class(x) # "character"
@@ -64,8 +66,9 @@ str(df1)
 - $ column1: chr  "1" "2" "aaa"
 - $ column2: Factor w/ 3 levels "a","b","c": 1 2 3
 - structure함수를 이용해보면 column1의 데이터형이 int에서 chr로 바뀐것을 알 수 있다.
-
+```
 ## paste function
+```R
 x <- paste("pine", "apple") # "pine apple"
 - default seperator가 공백이기 때문에 character끼리 스페이스로 자동 구분됨
 
@@ -75,21 +78,24 @@ x <- paste("pine", "apple", sep="")
 
 x <- paste(1, 1:5, sep="-")
 - output: 1-1 1-2 1-3 1-4 1-5
-
+```
 ## noquote function
+```R
 a <- paste("The value of 'pi' is", pi, "!!")
 - output: [1] "The value of 'pi' is 3.14159265358979 !!"
 noquote(a)
 - output: [1] The value of 'pi' is 3.14159265358979 !!
 - double quotation mark없이 출력
 - print(a, quote=FALSE)와 같음
-
+```
 ## character의 길이 함수: nchar function
+```R
 >mtcars # R에 있는 기본 제공형 table형 샘플 데이터
 >rowcars <- rownames(mtcars)
 - rownames() : table의 row 이름 list를 가져온다
-
+```
 ## colnames(mtcars)
+```R
 - column 이름 list
 >rowcars
 >nchar(rowcars) # rownames의 각각 길이를 출력
@@ -98,8 +104,9 @@ noquote(a)
 - output: 16
 > rowcars[which(nchar(rowcars) == max(nchar(rowcars)))]
 - [1] "Lincoln Continental"
-
+```
 ## grep function
+```R
 - 샘플 데이터 준비
 >mtcars
 >rowcars <- rownames(mtcars)
@@ -119,3 +126,4 @@ noquote(a)
 >grep("TOYOTA", toupper(rowcars), value=TRUE)
 - toupper()함수를 이용하여 샘플 데이터를 모두 대문자로 바꾸고 TOYOTA검색
 - output: [1] "TOYOTA COROLLA" "TOYOTA CORONA"
+```
