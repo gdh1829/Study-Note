@@ -1,8 +1,7 @@
-# Learning.
+# Study Note.
+about what I've learned or studied.  
 
-This repository is just about what I've learned or studied today.  
-
-OS - Linux
-Infra - AWS, Docker, Shell script 
-Software Programming - Typescript, Node, Java
-Data Programming - R, Bash
+OS - Linux  
+Infra - AWS, Docker, Shell script  
+Software Programming - Typescript, Node, Java  
+Data Programming - R, Bash  
