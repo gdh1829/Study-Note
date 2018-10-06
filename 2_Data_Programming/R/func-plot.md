@@ -45,7 +45,7 @@ plot(c(1,2), c(1,5), type="p") # same as plot(c(1,2), c(1,5))
 |h   |histogram   |
 |s   |stair steps   |
 |S   |upper stair steps   |
-|n   |no coordinate   |
+|n   |no coordinate   |  
 ※ type="n"은 경우 plot의 토대인 축은 표현되나, 좌표가 찍히지 않음으로써 그림을 그리기 직전 준비 상태와 비슷
 
 - 이외의 다양한 인자들
