@@ -2,19 +2,6 @@
 ?{keyword}
 ex. ?plot
 
-## R data type
-numeric 
-character
-boolean
-
-## Declare variables and insert values
-
-Three ways
-```R
-x <- 1   # representative way in R
-1 -> x
-x = 1    # general programming languges
-```
 ## insert multi values into single variable
 ```R
 x <- 1,2,3 #NG
