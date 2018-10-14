@@ -1,16 +1,18 @@
 Linux Commands
 ==========================================
-ref: http://itscom.org/archives/2450
+[Bash manual](http://www.gnu.org/software/bash/manual/bashref.html#Shell-Parameter-Expansion)  
+[Blog ref](http://itscom.org/archives/2450)  
 
-# cat /etc/*issue* 
-# cat /etc/issue
-# cat /etc/redhat-release
-    * 리눅스 OS버전 확인
+## 리눅스 OS버전 확인
+- cat /etc/*issue* 
+- cat /etc/issue
+- cat /etc/redhat-release
+    * 
 
-# uname -a
+## uname -a
     * 커널 정보 확인
 
-# chmod
+## chmod
     * 파일의 권한 변경
     * description
         ls -l로 디렉토리를 출력해보면 아래와 같이 출력된다.
@@ -23,20 +25,20 @@ ref: http://itscom.org/archives/2450
 
         chmod 744 /scripts/ko.sh
 
-# cp
+## cp
 파일과 디렉토리 복사
 -f, 파일 존재시 강제로 override
 -R, 반복되는 디렉토리에 대한 적용
 
 cp ko.txt ~/
 
-# crontab
+## crontab
 스케줄러
 
 crontab -l
 crontab -e
 
-# cut
+## cut
 필드 골라보기 명령어로 awk '{print $N}'과 비슷하지만 더 간단하게 사용 가능
 -c, 문자 선택
 -d, 기본 구분값 TAB 대신 구분자
@@ -53,7 +55,7 @@ echo "/home:[backup]" | cut -d: -f2 #output: [backup]
 * uname -a 결과값의 첫번째와 세번재 필드 출력
 uname -a | cut -d' ' -f1,3 #output: Linux 4.4.0-17134-Microsoft
 
-# date
+## date
 날짜 출력 또는 설정
 echo date #output: Sat Aug 25 17:55:38 DST 2018
 
@@ -67,7 +69,7 @@ echo date #output: Sat Aug 25 17:55:38 DST 2018
 date -s '2013-04-17 22:50:00'
 date --date[or just -d]="1 day ago" '+%Y/%m/%d' => 커맨드 실행일 기준 yesterday 값을 포맷에 맞게 출력
 
-# df
+## df
 파일 시스템 디스크 사용량 출력
 -h 사람이 읽기 좋은 단위로 출력
 -i inode 정보 출력
@@ -76,7 +78,7 @@ date --date[or just -d]="1 day ago" '+%Y/%m/%d' => 커맨드 실행일 기준 ye
 df -h
 df -Th
 
-# echo
+## echo
 인수로 지정된 문자열을 출력
 -e 문자열에서 역슬래쉬와 조합이되는 이스케이프 문자 함께 사용(\n: 개행문자, \t: 탭)
 -n 마지막에 따라오는 개행문자를 출력하지 않는다
@@ -92,14 +94,14 @@ output:
 Hello
 World
 
-# env
+## env
 환경변수 보기
 
-# expr
+## expr
 수식연산 
 expr 3 + 5
 
-# find
+## find
 파일 및 디렉토리 검색
 * cgi 파일 중 "문자"를 포함하는 파일 출력
 find ./ -type f -name *.cgi -exec grep "문자" {} \; -print
@@ -114,7 +116,7 @@ find /home/abc -type f -mmin +3 -print | grep 'doc\|pdf'
 * 2개 이상 디렉토리에서 7z파일 검색
 find /back/192.*.10 /back/192.*.20 -name "*_1803*.7z"
 
-# grep
+## grep
 문자 패턴 매치
 -c 검색결과 총 행수를 출력
 -i ignore case-sensitive
@@ -138,18 +140,18 @@ echo '/data/bk/10.1.1.2' | grep -o '/' | wc -w
 ps -ef | grep "ph[p]"
 w | grep -v 'tty1'
 
-# free
+## free
 메모리 사용량 출력
 free -lm
 
-# head
+## head
 파일의 앞 부분부터 원하는 행을 출력
 csv로그와 같이 데이터 사이즈가 너무 큰 경우. 윈도우즈에서 파일 오픈시 시간이 많이 걸린다. 특히나 네트워크 환경에서는.
 이런 경우 head를 이용하면 간편하게 원하는 부분만 빠르게 확인 가능
 
 head -3 smb.conf
 
-# history
+## history
 유저가 사용한 명령어 히스토리를 보여준다.
 이벤트 지시자 !를 함께 사용하여 히스토리 검색 실행 가능
 
@@ -160,35 +162,35 @@ head -3 smb.conf
 history | more
 history 10
 
-# ifconfig
+## ifconfig
 네트워크 인터페이스 설정
 
 ifconfig eth0
 
-# ip
+## ip
 네트워크 인터페이스 설정 명령어
 
 ip addr
 ip link set eth0 up
 ip addr add 192.168.11.11 dev eth0
 
-# kill
+## kill
 프로세스 종료
 -9 강제 종료
 
 kill -9 1167
 
-# killall
+## killall
 프로세스 이름으로 종료
 
 killall httpd
 
-# ln
+## ln
 파일간 링크 생성
 
 ln -s /usr/local/mysql/bin/mysql /usr/bin/
 
-# ls
+## ls
 파일 리스트 출력
 -a 모든파일(.으로 시작하는 파일 포함) 출력
 -C 한 줄에 여러 정보 출력
@@ -198,18 +200,18 @@ ln -s /usr/local/mysql/bin/mysql /usr/bin/
 -t 수정시간으로 정렬
 --time-style=long-iso 년도 표기
 
-# mkdir
+## mkdir
 디렉토리 생성
 -P 상위 디렉토리 없어도 생성
 
 mkdir -P /home/ko/wwww
 
-# mount
+## mount
 파일시스템 마운트
 
 mount dev/mapper/sdisk/data
 
-# mv
+## mv
 파일 이동하기
 -b 백업
 -u 목적지 파일 보다 최신 파일만 복사
@@ -217,7 +219,7 @@ mount dev/mapper/sdisk/data
 
 mv -uv ./* /home/ab/
 
-# netstat
+## netstat
 네트워크 상태 출력
 -r 커널 라우팅 테이블 출력
 -s 프로토콜별 상태 출력
@@ -225,39 +227,39 @@ mv -uv ./* /home/ab/
 
 netstat -an | grep "LISTEN"
 
-# nice
+## nice
 프로그램의 우선순위 지정
 범위: -20(우선순위 높음) ~ 19(우선순위 낮음)
 
 nice -n 19 /scripts/backup.sh
 
-# nohup
+## nohup
 백그라운드로 쉘 실행
 쉘 커맨드 끝에 & 를 넣은 것과 같음
 
-# pgrep
+## pgrep
 실행중인 프로세스 찾기
 -l PID와 함께 일치하는 프로세스의 이름 출력
 -f -l 옵션과 함께 사용하면 명령어의 경로도 출력
 -n 패턴과 일치하는 프로세스의 가장 최근 PID 출력
 -x 패턴과 정확하게 일치되는 프로세스만 출력
 
-# pkill
+## pkill
 특정 프로세스 kill
 -n 패턴과 일치하는 프로세스의 가장 최근에 실행된 프로세스 하나만 종료
 -x 패턴과 정확하게 일치하는 프로세스만 종료
 
-# ping
+## ping
 네트워크 핑 점검
 
 ping -c 3 192.168.11.11
 
-# ps
+## ps
 프로새스 모니터링
 
 ps -U root -u root u
 
-# wc
+## wc
 라인 또는 단어 수 출력
 
 -c 문자 수 보여줌
@@ -267,34 +269,34 @@ ps -U root -u root u
 ls | wc -l
 cat ./httpd.conf | grep 'apache' | wc -w
 
-# which 
+## which 
 명령어 경로 출력
 
-# xargs
+## xargs
 표준입력으로부터 명령 실행
 ps -ef | grep php | awk '{print $2}' | xargs kill -9 
 find /etc/ -name '*.conf' | xargs >> /root/123.txt
 find . -type d -print0 | xargs -0 chmod 
 
-# w
+## w
 로그인된 사용자 보기
 w -i
  19:47:23 up  3:09,  0 users,  load average: 0.52, 0.58, 0.59
 USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
 
-# scp
+## scp
     * 원격 보안복사
     * example: 192.168.1.2서버로 이동하여 /home/kd 디렉토리를 현재 local의 위치로 recursive copy
     scp -r root@192.168.1.2:/home/kd ./
 
-# rsync
+## rsync
     * 원격 서버와 디렉토리를 sync 시켜줌
     * 사용법은 scp와 비슷
     * rsync -chavzP --stats {location1} {location2}
     * location1 => sync 시키고자 하는 데이터가 있는 디렉토리 또는 파일
     * location2 => sync를 받는 디렉토리 또는 파일
 
-# tr
+## tr
     * 문자열의 특정 문자를 삭제하거나 변환
     * options
         -d "SET1" SET1과 일치하는 패턴 삭제
@@ -302,7 +304,7 @@ USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
     whoami | tr "a-z" "A-Z" => 문자열의 소문자를 대문자로 변환
     date | tr -d "a-z" => 소문자 a-z 삭제
 
-# tail
+## tail
     * 파일의 마지막 부분 출력.
     * 로그를 보고 싶을 때 보통 사용. 실시간 보기가 가능한 옵션 때문.
     * options
@@ -317,8 +319,20 @@ USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
     tail -n +20 sample.log => 20번째 줄 이후부터 출력
     tail -f sample.log => 실시간 출력(모니터링)
 
-# source
+## source
     * 지정한 소스파일 또는 함수를 실행시킴
     * 수정된 코드를 바로 적용하여 실행시키고자 할 때 사용됨
 
-    
+## export
+* 현재 실행 중인 스크립트나 쉘의 모든 자식 프로세스가 변수를 사용할 수 있게 해준다. 역방향은 X.
+* bash는 변수 선언과 함께 export 명령을 수행할 수 있으나 sh는 변수 선언과 export 적용을 두 단계로 나눠서 실행해야 한다.
+* sh
+```sh
+PATH=$PATH:/usr/local/bin
+export PATH
+```
+* bash
+```bash
+export PATH=$PATH:/usr/local/bin
+```
+
