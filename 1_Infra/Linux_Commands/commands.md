@@ -22,8 +22,14 @@ Linux Commands
     * options
         -R, 서브 디렉토리 파일 모두 변경
     * sample
-
         chmod 744 /scripts/ko.sh
+        chmod 400 : 해당 파일의 소유자만 읽기 권한만을 갖음. 다른 유저에게는 보이지도 않게 됨.
+
+## apt-get
+    * linux software 설치 및 삭제 또는 목록 업데이트 커맨드.
+    * super user 권한이 필요하기 때문에 sudo apt-get {명령} 으로 사용한다
+    * sudo apt-get update : 리눅스 소프트웨어 목록을 최신으로 업데이트
+    * sudo apt-get install apache2: 아파치2 설치
 
 ## cp
 파일과 디렉토리 복사
