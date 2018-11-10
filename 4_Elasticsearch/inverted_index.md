@@ -1,12 +1,12 @@
 inverted index
 ========================
-※ This document calls Elasticsearch ES
+※ Elasticsearch(Hereinafter referred to as ES)
 - very versatile data structure
 - very easy to use and understand
 - Apache Lucene's implementation
 
 # Inverted Indexes and Index Terms
-![screenshot](./images/inverted-index.png)
+![screenshot](./images/inverted-index.png)  
 위의 그림의 세 문장은 몇 가지 프로세스를 거치고(lowercasing, removing punctuation and splitting words), 위의 그림과 같은 "inverted index" 구조가 만들어진다.
 
 "inverted index"는 terms를 포함한 documents (and possibly positions in the document)에 terms를 map한다.
