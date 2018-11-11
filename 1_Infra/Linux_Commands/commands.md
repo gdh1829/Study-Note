@@ -342,3 +342,19 @@ export PATH
 export PATH=$PATH:/usr/local/bin
 ```
 
+## dirname
+* 입력된 경로(또는 경로 + 파일)로부터 디렉토리를 추출한다
+* 해당 위치에 실제 파일 또는 폴더 유무와 상관 없다.
+* 상대 경로로 입력하면 상대경로가, 절대경로로 입력하면 절대경로가 출력
+* 단, ~는 실제 홈폴더로 변경된다.
+```bash
+$ dirname /var/www/index.html
+# /var/www/html
+$ dirname ../a/../b/hello.sh
+# ../a/../b
+$ dirname /etc/ 또는 dirname /etc
+# /
+$ dirname ~abc/../sample.txt
+# root/abc/..
+```
+

@@ -30,6 +30,10 @@ echo $# # input params 개수
 true
 false
 
+#문자열
+-z : 문자열 길이가 0이면 true
+-n : 문자열 길이가 0이 아니면 false
+
 #파일 검사
 #-e 파일명: 파일이 존재하면 참
 #-d 파일명: 디렉토리면 참
