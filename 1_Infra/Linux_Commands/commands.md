@@ -74,7 +74,7 @@ echo date #output: Sat Aug 25 17:55:38 DST 2018
 
 date -s '2013-04-17 22:50:00'
 date --date[or just -d]="1 day ago" '+%Y/%m/%d' => 커맨드 실행일 기준 yesterday 값을 포맷에 맞게 출력
-
+date -d "25 JUN 2018" +%Y%m%%d => 입력 날짜를 지정된 형식으로 변환
 ## df
 파일 시스템 디스크 사용량 출력
 -h 사람이 읽기 좋은 단위로 출력
