@@ -358,3 +358,35 @@ $ dirname ~abc/../sample.txt
 # root/abc/..
 ```
 
+## basename
+* 입력된 path에서 가장 마지막 디렉토리 또는 파일의 명을 추출
+* dirname과 비슷해보이지만 dirname의 경우 최종 디렉토리만을 타겟으로 한다.
+```bash
+$ basename /var/www/sample.log
+# output -> sample.log
+$ dirname /var/www/sample.log
+# output -> www
+```
+* options  
+```bash
+$ basename /var/www/sample.log .log
+# output -> sample
+$ basename -s .log /var/www/sample.log .log
+# output -> sample
+$ basename -m /var/www/sample.log /usr/www/test.log
+# output -> sample test
+```
+
+## xargs
+* Xargs is a useful tool to run a particular command for every item in a list.
+* 복수의 stdin에 각각에 대하여 지정한 command를 모두 각각 적용하도록 한다.
+```bash
+$ ls
+# image1.JPG image2.JPG image3.JPG image4.jpg
+$ basename -s .JPG -a *.JPG | xargs -n1 -i mv {}.JPG {}.jpg
+$ ls
+# image1.jpg image2.jpg image3.jpg image4.jpg
+```
+1. basename으로 현재 디렉토리의 모든 .JPG파일을 읽어 extention을 제외한 파일명만 모두 stdout으로 pipeline을 통해 xargs로 보낸다.
+1. xargs는 -n 옵션을 통해 --max-args를 1로 지정한다. 즉, xargs를 통해 반복적으로 실행할 커맨드의 arguments의 수는 1개씩!
+1. -i 옵션은 --replace[=R]으로서 stdin으로 읽어들인 initial-args의 이름을 R로 replace한다는 의미. 만약 R값이 특정되어있지 않다면 {}으로 가정한다.
