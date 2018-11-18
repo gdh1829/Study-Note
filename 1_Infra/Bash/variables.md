@@ -34,10 +34,10 @@ Command subsutitution은 커맨드의 ouput을 다시 또 다른 변수의 값�
 만약 커맨드의 ouput이 goes over several lines 이라면, 라인 변환은 지워지고 모두 single line으로 모여서 출력된다.
 
 5. Exporting Variables
-다음의 키워드를 이용한다. **export**
-- export  
-example
-- script1.sh
+다음의 키워드를 이용한다. **export**  
+* example  
+
+script1.sh
 ```Bash
 #!/bin/bash
 # demonstrate variable scope 1.
@@ -50,7 +50,7 @@ export var1
 # Let's see what they are now
 echo $0 :: var1 : $var1, var2 : $var2
 ```
-- script2.sh
+script2.sh
 ```Bash
 #!/bin/bash
 # demonstrate variable scope 2
@@ -62,7 +62,7 @@ var2=bleh
 # Let's verify their current value
 echo $0 :: var1 : $var1, var2 : $var2
 ```
-- 다음은 script1.sh 실행의 output이다
+다음은 script1.sh 실행의 output이다
 ```
 $ ./script1.sh
 ./script1.sh
