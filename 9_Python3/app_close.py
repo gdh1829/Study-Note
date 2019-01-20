@@ -1,68 +1,121 @@
-#!python
+#!/usr/bin/python3
 
-import pymysql as mysql
+import sys
+import pymysql
+import logging
+# import mysql.connector
+# from mysql.connector import Error
+# from mysql.connector import pooling
+
+# try:
+#     connection_pool = mysql.connector.pooling.MySQLConnectionPool(
+#         pool_name = "pynative_pool", #automatically created, if nothing
+#         pool_size = 5, #default is 5, if nothing
+#         pool_reset_session=True,
+#         host='localhost',
+#         database='PRC10000',
+#         user='root',
+#         password='devko',
+#         charset='utf8'
+#     )
+
+# name space
+HOST = '127.0.0.1'
+PORT = 3306
+DB = 'PRC10000'
+USER = 'root'
+PASSWORD = 'rootpass'
+CONN_TIMEOUT = 5
+conn = None
+
+# MySQL Connection
+def getDbConnection(HOST, PORT, DB, USER, PASSWORD):
+    global conn
+    try:
+        if(conn is None):
+            conn = pymysql.connect(
+                host=HOST, 
+                port=PORT, 
+                db=DB, 
+                user=USER,
+                password=PASSWORD,
+                charset='utf8mb4',
+                connect_timeout=CONN_TIMEOUT,
+                cursorclass=pymysql.cursors.DictCursor
+            )
+        else:
+            logging.info("Connection is exited. Skipping connection")
+    except:
+        logging.error("Failed to open db connection.")
+        sys.exit(1)
 
 print("Application closing process gets started...")
+
 APP_ID = input("Please enter target app id: ")
-assert isinstance(APP_ID, int), "Number type is only allowed."
-print("Inserted App Id is {APP_ID}")
+assert isinstance(int(APP_ID), int), "Only number type is allowed."
+print(f'Inserted App Id is {APP_ID}')
 
-SELECT_APP_SQL = "SELECT id, companyId, app_name, app_key, app_secret FROM application WHERE id = {APP_ID}"
+SELECT_APP_SQL = f"SELECT a.id, a.app_name, u.id as user_authenticated_id \
+                    FROM application a \
+                    INNER JOIN user_authenticated u ON a.id = u.app_id \
+                    WHERE a.id = {APP_ID}"
 
-UPDATE_APP_TABLE_SQL = "UPDATE application " \
-    "SET app_secret = concat(app_secret, '_closed') " \
-    "WHERE id = 1 AND app_key = 'key123' AND app_name = 'test_app';"
-
-dbconn = getDBConnection()
-runProcess(dbconn, SELECT_APP_SQL)
-
-def getDBConnection():
-    connection = mysql.connect(
-        host='localhost',
-        user='root',
-        password='devko',
-        db='PRC10000',
-        charset='utf8'
-    )
-    return connection
-
-def runProcess(db, query):
-    cursor = db.cursor()
+def selectRecords(query):
     try:
-        db.begin()
-        cursor.execute(query)
-        app_info = checkQeuryResultForSelect(cursor)
-        print(str(app_info))
-        db.rollback()
+        # create connection
+        getDbConnection(HOST, PORT, DB, USER, PASSWORD)
+        # create cursor
+        with conn.cursor() as cur:
+            cur.execute(query)
+            rows = cur.fetchall()
+            for row in rows:
+                print(row)
     except Exception as e:
-        print("[ERROR] %s" % str(e))
-        db.rollback()
+        print(e)
+    finally:
+        cur.close()
+        conn.close()
 
-def checkQeuryResultForSelect(cursor):
-    app_info = {}
+selectRecords(SELECT_APP_SQL)
+
+
+
+
+# UPDATE_APP_TABLE_SQL = "UPDATE application " \
+#     "SET app_secret = concat(app_secret, '_closed') " \
+#     "WHERE id = 1 AND app_key = 'key123' AND app_name = 'test_app';"
+
+# dbconn = getDBConnection()
+# runProcess(dbconn, SELECT_APP_SQL)
+
+# 
+
+
+# def checkQeuryResultForSelect(cursor):
+#     app_info = {}
     
-    results = cursor.fetchall()
-    if len(results) > 1 or len(results) == 0:
-        raise UnexpectedTargetNumberExpection("Target application should be one.")
+#     results = cursor.fetchall()
+#     if len(results) > 1 or len(results) == 0:
+#         raise UnexpectedTargetNumberExpection("Target application should be one.")
     
-    for row in results:
-        app_info["id"] = row[0]
-        app_info["companyId"] = row[1]
-        app_info["app_name"] = row[2]
-        app_info["app_key"] = row[3]
-        app_info["app_secret"] = row[4]
+#     for row in results:
+#         app_info["id"] = row[0]
+#         app_info["companyId"] = row[1]
+#         app_info["app_name"] = row[2]
+#         app_info["app_key"] = row[3]
+#         app_info["app_secret"] = row[4]
     
-    return app_info
+#     return app_info
 
 
-def checkDbExecutionForUpdateAndDelete(cursor):
-    result = False
-    affected_count = cursor.rowcount()
-    # assert (affected_count != 1), "Failed to update."
-    if affected_count != 1:
-        raise AssertionError("Failed")
-    return result
+# def checkDbExecutionForUpdateAndDelete(cursor):
+#     result = False
+#     affected_count = cursor.rowcount()
+#     # assert (affected_count != 1), "Failed to update."
+#     if affected_count != 1:
+#         raise AssertionError("Failed")
+#     return result
 
-class UnexpectedTargetNumberExpection(Exception):
-    pass
+# class UnexpectedTargetNumberExpection(Exception):
+#     pass
 
