@@ -52,11 +52,19 @@ INSERT INTO user (app_id, company_id, company_user_id, registered_date, updated_
 VALUES('1', '10000', '1', now(), now());
 INSERT INTO user (app_id, company_id, company_user_id, registered_date, updated_date) 
 VALUES('1', '10001', '1', now(), now());
+INSERT INTO user (app_id, company_id, company_user_id, registered_date, updated_date) 
+VALUES('1', '10002', '1', now(), now());
+INSERT INTO user (app_id, company_id, company_user_id, registered_date, updated_date) 
+VALUES('1', '10000', '1', now(), now());
 
 INSERT INTO user_authenticated (user_id, app_id, registered_date, updated_date) 
 VALUES('1', '1', now(), now());
 INSERT INTO user_authenticated (user_id, app_id, registered_date, updated_date) 
 VALUES('2', '1', now(), now());
+INSERT INTO user_authenticated (user_id, app_id, registered_date, updated_date) 
+VALUES('3', '1', now(), now());
+INSERT INTO user_authenticated (user_id, app_id, registered_date, updated_date) 
+VALUES('4', '1', now(), now());
 
 
 
