@@ -27,3 +27,16 @@ COMMIT;
 // check once again after commit
 SELECT user, authentication_string, plugin,host FROM mysql.user;
 ```
+
+2. How to start/restart/stop mysql-server
+```mysql
+sudo service mysql start[restart|stop]
+```
+
+3. How to dump your database data and import again
+Use mysqldump command
+```mysql
+
+mysqldump -u <username> -R <backupDb> > <backupDb>.sql -p
+mysql -u <username> <insertedTargetDb> <> <backupDb>.sql -p
+```
