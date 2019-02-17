@@ -26,3 +26,6 @@ https://www.thegeekstuff.com/2009/09/unix-sed-tutorial-printing-file-lines-using
 ## sed -e 's:/usr/local:/usr:g' sample.txt
 - sed -e 's/\/usr\/local/\/usr/g' sample.txt와 같다.
 - 지저분한 백 슬래쉬를 :로 깔끔하게 작성 가능
+
+## sed -i 's/World/Docker/' *.py
+- 확장자가 py인 모든 파일의 내부에 World를 Docker로 치환한다.
