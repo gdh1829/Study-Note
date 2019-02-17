@@ -15,6 +15,8 @@ RUN pip install Flask uWSGI
 WORKDIR /usr/src/app
 # copy host source file to /usr/src/app in docker container
 COPY app /usr/src/app
+# script to optionally execute dev and prod environment
+COPY cmd.sh /
 # makes other containers also able to access to this container as well as host
 EXPOSE 9090 9191
 # Sets up uWSGI user who is going to execute the commands after this line including CMD and ENTRYPOINT
@@ -22,4 +24,4 @@ USER uwsgi
 
 # command 
 # CMD ["python", "identidock.py"]
-CMD ["uwsgi", "--http", "0.0.0.0:9090", "--wsgi-file", "/usr/src/app/identidock.py", "--callable", "app", "--stats", "0.0.0.0:9191"]
+CMD ["/cmd.sh"]
