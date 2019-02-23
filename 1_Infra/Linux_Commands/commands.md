@@ -4,10 +4,10 @@ Linux Commands
 [Blog ref](http://itscom.org/archives/2450)  
 
 ## 리눅스 OS버전 확인
+- lsb_release -ca
 - cat /etc/*issue* 
 - cat /etc/issue
 - cat /etc/redhat-release
-    * 
 
 ## uname -a
     * 커널 정보 확인
@@ -75,6 +75,7 @@ echo date #output: Sat Aug 25 17:55:38 DST 2018
 date -s '2013-04-17 22:50:00'
 date --date[or just -d]="1 day ago" '+%Y/%m/%d' => 커맨드 실행일 기준 yesterday 값을 포맷에 맞게 출력
 date -d "25 JUN 2018" +%Y%m%%d => 입력 날짜를 지정된 형식으로 변환
+
 ## df
 파일 시스템 디스크 사용량 출력
 -h 사람이 읽기 좋은 단위로 출력
@@ -278,12 +279,6 @@ cat ./httpd.conf | grep 'apache' | wc -w
 ## which 
 명령어 경로 출력
 
-## xargs
-표준입력으로부터 명령 실행
-ps -ef | grep php | awk '{print $2}' | xargs kill -9 
-find /etc/ -name '*.conf' | xargs >> /root/123.txt
-find . -type d -print0 | xargs -0 chmod 
-
 ## w
 로그인된 사용자 보기
 w -i
@@ -386,7 +381,14 @@ $ ls
 $ basename -s .JPG -a *.JPG | xargs -n1 -i mv {}.JPG {}.jpg
 $ ls
 # image1.jpg image2.jpg image3.jpg image4.jpg
+$ ps -ef | grep php | awk '{print $2}' | xargs kill -9 
+$ find /etc/ -name '*.conf' | xargs >> /root/123.txt
+$ find . -type d -print0 | xargs -0 chmod 
 ```
 1. basename으로 현재 디렉토리의 모든 .JPG파일을 읽어 extention을 제외한 파일명만 모두 stdout으로 pipeline을 통해 xargs로 보낸다.
 1. xargs는 -n 옵션을 통해 --max-args를 1로 지정한다. 즉, xargs를 통해 반복적으로 실행할 커맨드의 arguments의 수는 1개씩!
 1. -i 옵션은 --replace[=R]으로서 stdin으로 읽어들인 initial-args의 이름을 R로 replace한다는 의미. 만약 R값이 특정되어있지 않다면 {}으로 가정한다.
+
+
+## tee
+
