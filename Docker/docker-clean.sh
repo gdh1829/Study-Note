@@ -37,7 +37,7 @@ function remove_containers {
 
 function remove_images {
   echo "Cleaning images..."
-  if [[ ! $(docker image prune -f) ]]; then
+  if [[ ! $(docker image prune -af) ]]; then
     echo 'Failed to execute docker image prune -f' >&2
     exit $?
   fi
