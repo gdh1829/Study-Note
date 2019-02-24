@@ -389,6 +389,22 @@ $ find . -type d -print0 | xargs -0 chmod
 1. xargs는 -n 옵션을 통해 --max-args를 1로 지정한다. 즉, xargs를 통해 반복적으로 실행할 커맨드의 arguments의 수는 1개씩!
 1. -i 옵션은 --replace[=R]으로서 stdin으로 읽어들인 initial-args의 이름을 R로 replace한다는 의미. 만약 R값이 특정되어있지 않다면 {}으로 가정한다.
 
+## tree
+디렉토리의 구성을 한 눈에 보여주는 커맨드.  
+linux default built-in command(x)
+```
+$ tree Docker
+../Docker/
+├── bind_mount.md
+├── docker-clean.sh
+├── identidock
+│   ├── Dockerfile
+│   ├── app
+│   │   └── identidock.py
+│   ├── cmd.sh
+│   └── docker-compose.yml
+└── setup_docker_windows_wsl.md
+```
 
 ## tee
 
