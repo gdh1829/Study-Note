@@ -11,7 +11,7 @@ function show_description {
   No Option arguments are required.
   
   OPTIONS
-    -h --help           shows descriptions. cannot be combined with the others.
+    -h --help          shows descriptions. cannot be combined with the others.
     -i --image         clean up all of dummy images
     -v --volume        clean up all of dummy volumes
     -c --container     clean up all of dummy containers
@@ -64,8 +64,7 @@ for arg in $@; do
     echo "No or Wrong Arguments to execute this script" >&2
     exit $?
   fi
-  
-  for refined_arg in ${refined_args}; do
+  for refined_arg in ${refined_args[@]}; do
     case ${refined_arg} in
       h | --help ) 
         show_description 
@@ -85,4 +84,4 @@ for arg in $@; do
   done
 done
 
-echo "Script END"
+echo "END"
