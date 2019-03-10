@@ -26,10 +26,15 @@ Linux Commands
         chmod 400 : 해당 파일의 소유자만 읽기 권한만을 갖음. 다른 유저에게는 보이지도 않게 됨.
 
 ## apt-get
-    * linux software 설치 및 삭제 또는 목록 업데이트 커맨드.
-    * super user 권한이 필요하기 때문에 sudo apt-get {명령} 으로 사용한다
-    * sudo apt-get update : 리눅스 소프트웨어 목록을 최신으로 업데이트
-    * sudo apt-get install apache2: 아파치2 설치
+  * linux software 설치 및 삭제 또는 목록 업데이트 커맨드.
+  * super user 권한이 필요하기 때문에 sudo apt-get {명령} 으로 사용한다
+  * sudo apt-get update : 리눅스 소프트웨어 목록을 최신으로 업데이트
+  * sudo apt-get upgrade: 현재의 리눅스 소프트웨어 최신의 목록을 기준으로 소프트웨어 업그레이드
+  * sudo apt-get install apache2: 아파치2 설치
+
+## apt
+  * Demian계 16.04부터 apt-get을 대신할 새로운 패키지 매니저
+  * [APT_LINK](https://www.maketecheasier.com/apt-vs-apt-get-ubuntu/)
 
 ## cp
 파일과 디렉토리 복사
