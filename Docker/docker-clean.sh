@@ -64,6 +64,7 @@ for arg in $@; do
     echo "No or Wrong Arguments to execute this script" >&2
     exit $?
   fi
+  
   for refined_arg in ${refined_args[@]}; do
     case ${refined_arg} in
       h | --help ) 
