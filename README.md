@@ -1,7 +1,3 @@
-# Study Note.
-about what I've learned or studied.  
+# Study Note Archive
 
-OS - Linux  
-Infra - AWS, Docker, Shell script  
-Software Programming - Typescript, Node, Java  
-Data Programming - R, Bash  
+Docker, AWS, Python, Bash, Typescript, Node, Java
