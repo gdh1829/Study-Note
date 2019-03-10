@@ -10,7 +10,7 @@ FROM python:3
 # So it is very significant to always set USER in Dockerfile or to change users by using ENTRYPOINT or CMD script.
 RUN groupadd -r uwsgi && useradd -r -g uwsgi uwsgi
 # installs Flask - ligthweight Python WebFramework
-RUN pip install Flask uWSGI
+RUN pip install Flask uWSGI requests redis
 # work directory
 WORKDIR /usr/src/app
 # copy host source file to /usr/src/app in docker container

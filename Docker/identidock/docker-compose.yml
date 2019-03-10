@@ -1,8 +1,26 @@
-identidock:
-  build: .
-  ports:
-    - "5000:5000"
-  environment:
-    ENV: DEV
-  volumes:
-    - ./app:/app
+version: "3.6"
+services:
+  identidock:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      ENV: DEV
+    networks:
+      - identidock_net
+    volumes:
+      - ./app:/usr/src/app
+  
+  dnmonster:
+    image: amouat/dnmonster
+    networks:
+      - identidock_net
+  
+  redis:
+    image: redis
+    networks:
+      - identidock_net
+
+networks:
+  identidock_net:
+  
