@@ -1,9 +1,26 @@
 CloudWatch
 ===
+CloudWatch has available Amazon EC2 Metrics for you to use for mornitoring.
 
-## CloudWatch Custom Metric
-`Custom Metric`: CloudWatch가 기본적으로 제공하는 측정치 이외에 사용자가 측정한 값을 사용하도록 하는 것.  
-서버 애플리케이션, 로그 파일, 언어 레벨에서 측정치를 생성하고, 이 값들을 모니터링하거나 CloudWatch 액션을 제어하고 싶을 때 사용  
+## Default Metric
+- CPU Utilization
+    - identifies the processing power required to run an application upon a selected instance.
+- Network Utilization
+    - identifies the volume of incoming and outgoing network traffic to a single instance.
+- Disk Reads
+    - is used to determine the volume of the data the application reads from the hard disk of the instance. 
+    - This can be used to determine the speed of the applcation.  
+
+※ However, there are certain metrics that are note readily available in Cloudwatch such as memory utilization, disk space utilization, and many others which can be collected by setting up a custom metric.
+
+## Custom Metric
+- To make custom metric available, you need to prepare a custom metric using __CloudWatch Mornitoring Scripts__ which is written in Perl. You can also install __CloudWatch Agent__ to collect more system-level metrics from Amazon EC2 instances.
+- List of custom metrics that you can set up
+    - Memory Utilization
+    - Disk swap utilization
+    - Disk space utilization
+    - Page file utilization
+    - Log collection
 
 ## Pre-requirement
 - Instance 내부에서 aws cli를 사용하기 위해, Access Key와 Private Key를 설정  
