@@ -76,12 +76,6 @@ S3 Intelligent-Tiering
 - If it is stored on Amazon S3, you can enable client-side and server-side encryption.
 ※ There is no such thing as On-Premises Data Encryption for S3 and EBS as these services are in the AWS cloud and not on your on-premises network.
 
-## Amazon DynamoDB Accelerator (DAX)
-![DynamoDB DAX](../images/dynamoDB_DAX.png)
-- a fully managed, highly available, in-memory cache that can reduve Amazon DynamoDB response times from milliseconds to microseconds, even at millions of requests per second.
-- Although you may use ElasticCache as your database cache, it will not reduve the DynamoDB response time from milliseconds to microseconds as compared with DynamoDB DAX.
-- With Amazon EBS, you can use any of the standard RAID configurations that you can use with a traditional bare metal server, as long as that particular RAID configuration is supported by the operating system for your instance. This is because all RAID is accomplished at the software level. For greater I/O performance than you can achieve with a single volume, RAID 0 can stripe multiple volumes together; for on-instance redundancy, RAID 1 can mirror two volumes together.
-
 ## HVM AMI
 - is required to take advantage of enhanced networking and GPU processing. 
 - In order to pass through instructions to specialized network and GPU devices, the OS needs to be able to have access to the native hardware platform which the HVM virtualization provides.
@@ -118,16 +112,225 @@ S3 Intelligent-Tiering
 ## Amazon HSM 
 - a cloud-based hardware security module (HSM) that enables you to easily generate and use your own encryption keys on the AWS Cloud.
 - With CloudHSM, you can manage your own encryption keys using FIPS 140-2 Level 3 validated HSMs.
+
 ## Amazon KMS (Key Management Service)
+
 ## OLAP (Online Analytical Processing)
-- Redshift
+- Amazon Redshift, etc
+## OLTP (Online Transaction Processing)
+- RDS and DynamoDB
+
+## Amazon Redshift
+- Fully managed, __petabyte-scale data warehouse__ service
+- extends data warehouse queries to your data lake. You can run analytic queries against petabytes of data stored locally in Redshift, and directly against exabytes of data stored in S3.
+- is an OLAP type of DB
+- currently, only supports Single-AZ deployments.
+- Feature
+    - uses **columnar storage**, data compression, and zone maps to reduce the amount of I/O needed to perform queries.
+    - uses a **massively parallel processing** data warehouse architecture to parallelize and distribute SQL operations.
+    - uses machine learning to deliver high throughout based on your workloads.
+    - uses **result caching** to deliver sub-second response times for repeat queries.
+    - automatically and continuously backs up your data to S3. It can asynchronously replicate your snapshots to S3 in another region for disaster recovery.
+- components
+    - Cluster
+    - Redshift Nodes
+    - Parameter Groups
+        - a group of parameters that apply to all of the databases that you create in the cluster. The default paramter group has preset values for each of its paramters, and it cannot be modified.
+- Database Querying Options
+    - Connect to your cluster and run queries on the AWS Management Console with the Query Editor
+    - Connect to your cluster through a SQL client tool using standard ODBC and JDBC connections.
+- **Enhanced VPC Routing**
+    - By using Enhanced VPC Routing, you can use VPC features, such as VPC security groups, network access control lists (ACLs), VPC endpoints, VPC endpoint policies, internet gateway, and Domain Name System (DNS) servers, to manage the flow of data between your cluster and other resources.
+    - You can also use VPC flow logs to monitor __COPY__ and __UNLOAD__ traffic.
+        - When you use Amazon Redshift Enhanced VPC Routing, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your Amazon VPC.
+    - If Enhanced VPC Routing is not enabled, Amazon Redshift routes traffic through the Internet, including traffic to other services within the AWS network.
+- **RedShift Spectrum**
+    - Enables you to run queries against exabytes of data in S3 **without having to load or transform any data**.
+        - enabled you to query and analyze all of your data in Amazon S3 using the open formats you already use, with no data loading or transformations needed.
+    - Redshift Spectrum doesn't use Enhanced VPC Routing
+    - If you store data in a columnar format, Redshift Spectrum scans only the columns needed by your query, rather than processing entire rows.
+    - If you compress your data using one of Redshift Spectrum's supported compression algorithms, less data is scaned.
+
+## EFS
+![amazon efs](../images/efs.png)
+- Amazon Elastic File System (EFS) provides simple, scalable, elastic file storage for use with AWS Cloud services and on-premises resources.
+- When mounted on Amazon EC2 instances, an Amazon EFS file system provides a standard file system interface and file system access semantics, allowing you to seamlessly integrate Amazon EFS with your existing applications and tools.
+- Multiple Amazon EC2 instances can acess an Amazon EFS at the same time, allowing Amazon EFS to provide a common data source for workloads and applications running on more than one Amazon EC2 instance.
+- Example: there is a fleet of On-Demand EC2 instances that stores file doucments from the users to one of the attached EBS volumes. 
+    - Problem: The system performance is quite slow because the architecture doesn't provide the EC2 instances a parellel shared access to the file documents.
+    - Solution: Remember that an EBS volume can be attached to one EC2 instance at a time, hence, no ther EC2 instance can connect to that EBS Provisioned IOPS volume. Take note as well that the type of storage needed here is a "file storage" which means that S3 is not the best service to use because it is mainly used for "object storage", and S3 does not provide the notion of "folders" too.
+    ※ ElastiCache is an in-memory data store that improves the performance of your applications, which is not what you need since it is not a file storage.
+
+## CloudTrail
+![amazon cloudtrail](../images/cloudtrail.png)
+- service that enables governance, compliance, operational auditing, and risk auditing of your AWS account. With CloudTrail, you can log, continuously monitor, and retain account activity related to actions across your AWS infrastructures.
+- provides event history of your AWS account acivitiy, including actions taken through the AWS Management Console, AWS SDKs, command line tools, API calls, and other AWS services. This event history simplifies security analysis, resource change tracking, and troubleshooting.
+- although CloudWatch is also monitoring service, it cannot track the API calls to your AWS resources.
+
+## AWS X-Ray
+- helps you debug and analyze your microservices applications with request tracing so you can find the root cause of issues and performance.
+
+
 ## Terminology
 - SIT: System Integration Testing, is part of Functional Testing
 - UAT: User Acceptance Testing, is part of Functional Testing
 - DEV: development
 - PROD : production
+
 ## Amazon Athena
 - a service that enables a data analyst to perform interactive queries in the AWS on data stored in Amazon S3.
 - Athena is a serverless query service, an analyst doesn't need to manage any underlying compute infrastructure to use it.
 - There is also no need to load S3 data into Amazon S3 or transform it for analysis, which makes it easier and faster for an analyst to gain insight
 
+## ephemeral store volume
+- `ephmeral` literally means "short-lived" or "temporary" in the English dictionary.Hence, when you see this word in AWS, always consider this as just a temporary memory or a short-lived storage.
+- The virtual devices for instance store volumes are named as `ephemeral[0-23]`. Instance types that support one instance store volumes have `ephemeral0`. Instance types that support two instance store volumes have `ephemeral0` and `ephemeral1`, and so on until `ephemeral23`.
+- The data in an instance store persists only during the lifetime of its associated instance. If an instance reboots (intentionally or unintentionally), dat in the instance store persists.
+- However, data in the instance store is lost under the following circumstances:
+    - The underlying disk drive fails
+    - The instance stops
+    - The instance terminates
+- instance store volumes and EBS volumes are two different storage types. 
+    - An Amazon EBS volume is a durable, block-level storage device that you can attach to a single EC2 instance. 
+    - An instance store provides temporary block-level storage and is located on disks taht are physically attached to the host computer. No automatic backup will be performed
+
+## Storages that EC2 offers
+- Amazon Elastic Block Store(EBS)
+- Amazon EC2 Instance Store: ephemeral
+- Amazon Elastic File System(EFS)
+- Amazon Simple Storage Service(S3)
+
+## RDS Mornitoring
+- Amazon RDS provides metrics in real time for the operating system (OS) that your DB instance runs on.
+- You can view the metrics for your DB instance using the console, or consume the Enhanced Mornitoring JSON output from the CloudWatch Logs in a mornitoring system of your choice.
+- By default, Enhanced Monitoring metrics are stored in the CloudWatch Logs for 30 days. To modify the amount of time the metrics are stored in the CloudWatch Logs, change the retention for the `RDSOSMetrics` log group in the CloudWatch console.
+- Certain differences between CloudWatch and Enhanced Monitoring Metrics
+    - CloudWatch gathers metrics about CPU utilization from the hypervisor for a DB instance
+    - Enhanced Monitoring gathers its metrics from an agent on the instance.
+    - Because of difference of the measurements, the hypervisor layer performs a small amount of work.
+        - Hence, when you need to closely monitor how the different processes or threads on a DB instance use the CPU, including the percentage of the CPU bandwidth and total memory consumed by each process to maintain the reliability, availability, and performance of your system, the most suitable solution to properly monitor databases is to enable Enhanced Monitoring in RDS.
+            - Although you can use Amazon CloudWatch to monitor the CPU Utilization of your db instance, it does not provide the percentage of the CPU bandwidth and total memory consumed by each database process in your RDS instance.
+            - CloudWatch gathers metrics about CPU utilization from the hypervisor for a DB instance while RDS Enhanced Monitoring gathers its metrics from an agent on the instance.
+            - You do not have direct access to the instances/servers of your RDS database instance, unlike with your EC2 instances where you can install a CloudWatch agent or a custom script to get CPU and memory utilization of your instance.
+        - The differences can be greater if your DB instances use smaller instance classes, because then there are likely more virtual machines(VMs) that are managed by the hypervisor layer on a single physical instance. Enhanced Monitoring metrics are useful when you want to see how different processes or threads on a DB instance use the CPU.
+
+## Amazon EMR
+- Amazon EMR provides you a managed Hadoop framework that makes it easy, fast, and cost-effective to process vast amounts of data across dynamically scalable Amazon EC2 instances.
+- You can access the operating system of these EC2 instances that were created by Amazon EMR.
+
+## SSH Connection and CIDR block
+- SSH protocol uses TCP and port 22.
+- __/32__ denotes one IP address
+- __/0__ refers to the entire network
+
+## Relation between ASG and ELB health checks
+- There are two ways of checking the status of your EC2 instances:
+    - via the ASG
+    - via ELB health checks
+- ASG
+    - The default health checks for an ASG are __EC2 status checks__ only.
+    - If an instance fails these status checks, the ASG considers the intance unhealthy and replaces.
+    - __If you attached one or more load balancers or target groups to your ASG, the group does not, by default, consider an instance unhealthy and replace it if it fails the load balancer health checks.__
+    - __However, you can optionally configure the ASG to use ELB health checks, it considers the instance unhealthy if it fails either the EC2 status checks or the load balancer health checks.__ This ensures that the group can determine an instances's health based on additional tests provided by the load balancer. The load balancer periodically sends pings, attempts connections, or sends requests to test the EC2 instances. These tests are called __health checks__.
+
+## Temporary credentials in AWS
+- Temporary credentials are useful in scenarios that involve identity federation, delegation, cross-account, and IAM roles.
+- Example scenario: all 1200 employees would be granted access to use Amazon S3 for storage of their personal documents. And also it is required to incorporates single sign-on feature from your corporate AD or LDAP directory and also restrics access for each individual user to a designated user folder in an S3 bucket
+    - In this example, it is called __enterprise identity federation__ considering that you also need to set up sigle sign-on (SSO) capability.
+    - suitable solution:
+        - to set up a Federation proxy or an Identity provider
+        - to set up an AWS Security Token Service(AWS STS) to generate temporary tokens
+        - to configure an IAM role
+![enterprise_identity_federation_considering_sso](../images/enterprise_identity_federation_considering_sso.png)
+- In an enterprise identity federation, you can authenticate users in your organization's network, and then provide those users access to AWS without creating new AWS identities for them and requiring them to sign in with a seperate user name and password. This is known as the _single sign-on_ (SSO) approach to temporary access. AWS STS supports opend standards like Security Assertion Markup Language (SAML) 2.0, with which you can use Microsoft ADFS to leverage your Microsoft Active Directory. You can also use SAML 2.0 to manage your own solution for federating user identities.
+
+## SAML
+![example of SAML process](../images/example_of_saml_process.png)
+- Security Assertion Markup Language (SAML) is an open standard that allows identity providers(IdP) to pass authorization credentials to service providers (SP), which means that you can use one set of credentials to log into many different websites.
+- SAML transactions use Extensible Markup Language (XML) for standardized communcations between the IdP and SP. SAML is the link between the authentication of a user's identity and the authorization to use a service.
+- SAML enables Single Sign-On (SSO), a term that means users can log in once, and those same credentials can be reused to log into other service providers.
+- compose
+    - Identity Provider (IdP)
+    - Service Provider (SP)
+- SAML Assertion
+    - XML document that the identity provider sends to the service provider that contians the user authorization
+    - There are three different types of SAML Assertion
+        - Authentication assertions: prove identification of the user and provide the time the user logged in and what method of authentication they used(i.e. Kerberos, two-factor, etc)
+        - Attribution assertions: passes the SAML attributes to the service provider - SAML attributes are specific pieces of data that provide information about the user
+        - Authorization assertions: says if the user is authorized to use the service or if the identify provider denied their request due to a password failure or lack of rights to the service
+- SAML vs OAuth
+    - OAuth is a slightly newer standard that was co-developed by Google and Twitter to enable streamlined internet logins.
+    - OAuth uses a similar methodology as SAML to share login information.
+    - SAML provides more control to enterprises to keep their SSo logins more secure, whereas OAuth is better on mobile and uses JSON
+
+## Distributed Messaging System
+- Three main parts
+    - components of your distributed system(EC2 instances)
+    - your queue (distributed on Amazon SQS servers)
+    - messages in the queue
+- You can set up a system which has several components that send messages to the queue and receive messages from the queue. The queue redundantly stores the messages across multiple Amazon SQS servers.
+![distributed_messaging_system](../images/distributed_messaging_system.png)
+- Refer to the third step of the SQS Message Lifecycle:
+    1. Components 1 sends Message A to a queue, and the message is distributed across the Amazon SQS servers redundantly.
+    2. When Component 2 is ready to process a message, it consumes messages from the queue, and Message A is returned. While Message A is being processed, it remains in the queue and isn't returned to subsequent receive requests for the duration of the visibility timeout.
+    3. Component 2 __deletes__ Message A from the queue to prevent the message from being received and processed again once the visibility timeout expires.
+- Always remember that the messages in the SQS queue will continue to exist even after the EC2 instance has processed it, until you delete that message. You have to ensure that you delete the message after processing to prevent the message from being received and processed again once the visibility timeout expires.
+
+## WLM
+- WorkLoad Management
+- When you create a paramter group, the default WLM configuration contains one queue that can run up to five queries concurrently. You can add additional queues and configure WLM properties in each of them if you want more control over query processing. Each queue that you add has the same default WLM configuration until you configure its properties. When you add additional queues, the last queue in the configuration is the _default queue_. Unless a query is routed to another queue based on criteria in the WLM configuration, it is processed by the default queue. You cannot specify user groups or query groups for the default queue.
+
+## Amazon EBS Encryption
+- Amazon EBS encryption offers a simple encryption solution for your EBS volumes without the need to build, maintain, and secure your own key management infrastructure.
+- When ou create an encrypted EBS volume and attach it to a supported instance type, the following types of data are encrypted:
+    - Data at rest inside the volume
+    - All data moving between the volume and the instance
+    - All snapshots created from the volume
+    - All volumes created from those snapshots
+- If a EBS volume attached to the instance is already unencrypted, the best way to encrypt the data is to create and mount a new, encrypted Amazon EBS volume. Then, move the data to the new volume and finally delte the old, unencrypted Amazon EBS volume.
+    - You cannot encrypt the volume even if you unmount the volume. Remember taht encryption has to be done during volume creation.
+    - You cannot create an encrypted snapshots of an unencrypted volume or change existing volume from unencrypted to encrypted. You have to create new encrypted volume and transfer data to the new volume.
+
+## DynamoDB
+- NoSQL database service that provides fast and predictable performance with seamless scalability.
+- offers encryption at rest.
+- You can create database tables that can store and retrieve any amount of data, and serve any level of request traffic.
+- You can scale up or scale down your tables' throughput capacity without downtime or performance degradation, and use the AWS Management Console to monitor resource utilization and performance metrics.
+- Provides on-demand backup capability as well as enable point-in-time recovery for your DynamoDB tables. With point-in-time recovery, you can restore that table to any point in time during the **last 35 days**.
+- All of your data is stored in partitions, backed by solid state disks (SSDs) and automatically replicated across multiple AZs in an AWS region, providing built-in high availability and data durability.
+- You can create tables that are automcatically replicated across two or more AWS Regions, with full support for multi-master writes.
+- Core Components
+    - Tables
+    - Items
+    - Attributes
+    - Primary Key
+    - Secondary Indexes
+    - **DynamoDB Streams**: 
+        ![dynamodb_streams](../images/dynamodb_streams.png)
+        - optional feature not default. You need to manually enable DynamoDB Streams.
+        - an ordered flow of information about changes to items in an Amazon DynamoDB table. When you enable a stream on a table, DynamoDB captures information about every modification to data items in the tables.
+        - The naming convention for DynamoDB Streams endpoints is __streams.dynamodb..amazonaws.com__
+        - Whenever an application creates, updates, or deletes items in the table, DynamoDB Streams writes a __stream record__ with the primary key attributes of the items that were modified. A *stream record* contains information about a data modification to a single item in a DynamoDB table. You can configure the stream so that the stream records capture additional information, such as the "before" and "after" images of modified items.
+            - A new item is added to the table: captures an image of the entire item, including all of its attributes
+            - An item is updated: captures the "before" and "after" image of any attributes that were modified in the item.
+            - An item is deleted from the table: captues an image of the entire item before it was deleted.
+        - Each stream record also contains the name of the table, the event timestamp, and other metadata.
+        - Stream records are organized into groups, or **shards**. Each shard acts as a container for muliple stream records, and contains information required for accessing and iterating through these records.
+        - Stream records have a lifetime of 24 hours; after that, they are automatically removed from the stream.
+        - You can use DynamoDB Streams together with AWS Lambda to create a _trigger_, which is a code that executes automatically whenever an event of interest appears in a stream. With triggers, you can build applications that react to data modification in DynamoDB tables.
+            ![dynamodb_stream_with_trigger](../images/dynamodb_stream_with_trigger.png)
+            - If you enable DynamoDb Streams on a table, you can associate the stream ARN with a Lambda function that you write. Immediately after an item in the table is modified, a new record appears in the table's stream. AWS Lambda polls the stream and invokes your Lambda function synchronously when it detects new stream rocords. The Lambda function can perform any actions you specify, such as sending a notification or initiating a workflow.
+        - DynamoDB Streams enables powerful solutions such as data replication within and across Regions, materialized views of data in DynamoDB tables, data analysis using Kinesis materialized view, and much more.
+
+## Amazon DynamoDB Accelerator (DAX)
+![DynamoDB DAX](../images/dynamoDB_DAX.png)
+- a fully managed, highly available, in-memory cache that can reduce Amazon DynamoDB response times from milliseconds to microseconds, even at millions of requests per second.
+- Although you may use ElasticCache as your database cache, it will not reduve the DynamoDB response time from milliseconds to microseconds as compared with DynamoDB DAX.
+- With Amazon EBS, you can use any of the standard RAID configurations that you can use with a traditional bare metal server, as long as that particular RAID configuration is supported by the operating system for your instance. This is because all RAID is accomplished at the software level. For greater I/O performance than you can achieve with a single volume, RAID 0 can stripe multiple volumes together; for on-instance redundancy, RAID 1 can mirror two volumes together.
+
+## TCO
+- total cost of onwership
+- IT 용어 <컴퓨터> 소유 총비용
+## LDAP
+- lightweight directory access protocol
+- 경량 디렉토리 액세스 프로토콜(디렉토리 목록, 떄로는 인터넷에 엑세스할 때 사용하는 간단한 프로토콜)
