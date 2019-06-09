@@ -7,14 +7,17 @@ CloudWatch has available Amazon EC2 Metrics for you to use for mornitoring.
     - identifies the processing power required to run an application upon a selected instance.
 - Network Utilization
     - identifies the volume of incoming and outgoing network traffic to a single instance.
-- Disk Reads
+- Disk Reads/Writes
     - is used to determine the volume of the data the application reads from the hard disk of the instance. 
     - This can be used to determine the speed of the applcation.  
 
 ※ However, there are certain metrics that are note readily available in Cloudwatch such as memory utilization, disk space utilization, and many others which can be collected by setting up a custom metric.
 
 ## Custom Metric
-- To make custom metric available, you need to prepare a custom metric using __CloudWatch Mornitoring Scripts__ which is written in Perl. You can also install __CloudWatch Agent__ to collect more system-level metrics from Amazon EC2 instances.
+- To make custom metric available, you need to prepare a custom metric using __CloudWatch Mornitoring Scripts__ which is written in Perl. 
+- There is also a multi-platform __CloudWatch Agent__ to collect more system-level metrics from Amazon EC2 instances, which can be installed on both Linux and Windows-based instances. You can use a single agent to collect both system metrics and log files from Amazon EC2 instances and on-premises servers.
+    - This agent supports both Windows Server and Linux and enables you to select the metrics to be collected, including sub-resource metrics such as per-CPU core. 
+![cloudwatch_agent](../images/cloudwatch_agent.png)
 - List of custom metrics that you can set up
     - Memory Utilization
     - Disk swap utilization

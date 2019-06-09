@@ -1,3 +1,13 @@
+OpsWorks
+===
+- configuration management service that provides managed instnaces of Chef and Puppet.
+- Chef and Puppet are automation platforms taht allow you to use code to automate the configurations of your servers.
+- OpsWorks lets you use Chef and Puppet to automate how servers are configured, deployed and managed across your Amazon EC2 instances or on-premises compute environments.
+- OpsWorks has 3 offerings
+    - AWS OpsWorks for Chef Automate
+    - AWS OpsWorks for Puppet Enterprise
+    - AWS OpsWorks Stacks
+
 ASG
 ===
 
@@ -44,6 +54,15 @@ Lambda@Edge
 - You can automate your serverless application's release process using AWS CodePipeline and AWS CodeDeploy.
 - Lambda will automatically track the behavior of your Lambda function invocations and provide feedback that you can monitor. In addition, it provides metrics that allows you to analyze the full function invocation spectrum, including event source integration and whether downstream resources perform as expected.
 
+Lambda deployment configuration types to specify how traffic is shifted from the original AWS Lambda function version to the new AWS Lambda function version
+===
+- **Canary**:
+    - Traffic is shifted in two increments. You can choose from predefined canary options that specify the percentage of traffic shifted to your updated Lambda function version in the first increment and the interval, in minutes, before the remaining traffic is shifted in the second increment.
+- **Linear**:
+    - Traffic is shifted in equal increments with an equal number of minutes between each increment. You can choose from predefined linear options that specify the percentage of traffic shifted in each increment and the number of minutes between each increment.
+- **All-at-once**:
+    - All traffic is shifted from the original Lambda function to the updated Lambda function version at once.
+
 ## Bring on-premises network to AWS
 - You can bring part or all of your public IPv4 address range from your on-premises network to your AWS account. You continue to own the address range, but AWS advertises it on the internet. After you bring the address range to AWS, it appears in your account as an address pool. You can create an Elastic IP address from your address pool and use it with your AWS resources, such as EC2 instances, NAT gateways, and Network Load Balancers. This is also called "`Bring Your Own IP Addresses (BYOIP)`".
 - To ensure that only you can bring your address range to your AWS account, you must authorize Amazon to advertise the address range and provide proof that you own the address range.
@@ -69,6 +88,25 @@ S3 Intelligent-Tiering
     - If an object inthe infrequent access tier is accessed later, it is automatically moved back to the frequent access tier. No additional tiering fees apply when objects are moved between access tiers within the S3 Intelligent-Tiering storage class. S3 Intelligent-Tiering is designed for 99.9% availability and 99.999999999% durability, and offers the same low latency and high throughput performance of S3 Standard.
 - Amazon S3 features including S3 Object Tagging, S3 Cross-Region Replication, and S3 Select all work with S3 Intelligent-Tiering. Customers can start using S3 Intelligent-Tiering through the S3 API, CLI, and management console by putting objects directly into S3 Intelligent-Tiering or by using a S3 Lifecycle policy to move objects from S3 Standard or S3 Standard-IA to S3 Intelligent-Tiering. Customers can also archive obejcts with a S3 Lifecycle policy from S3 Intelligent-Tiering into Amazon S3 Glacier.
 - S3 Intelligent-Tiering charges a small tiering fee and has a minimum eligible object size of 128KB for auto-tiering. Smaller objests may be stored but will always be charged at the Frequent Access tier rates.
+
+## S3 Pre-Signed URLs
+![s3_presigned_url](../images/s3_presigned_url.png)
+- In Amazon S3, all objects are private by default. Only the object owner has permission to access these objects. 
+- However, the object owner can optionally share objects with others **by creating a pre-signed URL**, using their own security credentials, **to grant time-limited permission to download the objects**.
+- When you create a pre-signed URL for your object, you must provide your security credentials, specify a bucket name, an object key, specify the HTTP method (GET to download the object) and expiration date and time. The pre-signed URLs are valid only for the specified duration.
+- Anyone who receives the pre-signed URL can then access the object. For example, if you have a video in your bucket and both the bucket and the object are private, you can share the video with others by generating a pre-signed URL.
+
+## Avoiding accidental deletion in Amazon S3 bucket
+- Enable **Versioning**
+    - Versioning is a means of keeping multiple variants of an object in the same bucket.
+    - You can use versioning to preserve, retrieve, and restore every version of every object stored in Amazon S3 bucket.
+    - With versioning, you can easily recover from both unintended user actions and application failures.
+- Enable **MFA(Multi-Factor Authentication)** Delete
+    - If the MFA Delete is enabled, it requires additional authentication for either of the following operations:
+        - Change the versioning state of your bucket
+        - Permanently delete an object version
+
+## S3 Pre-Signed URLs vs CloudFront Singed URLs vs Origin Access Identity(OAI)
 
 ## how to ensure data security
 - You can secure the privacy of your data in AWS, both at rest and in-transit, through encryption.
@@ -200,9 +238,19 @@ S3 Intelligent-Tiering
 - Amazon Elastic File System(EFS)
 - Amazon Simple Storage Service(S3)
 
-## RDS Mornitoring
+## snapshot process when an instance uses a RAID configuration
+- Remember that since instance is using a RAID configuration, the snapshot process is different.
+- **You should stop all I/O activity of the volumes before creating a snapshot.**
+    1. Stop all applications from writing to the RAID array.
+    2. Flush all caches to the disk.
+    3. Confirm that the associated EC2 instance is no longer writing to the RAID array by taking actions such as freezing the file system, unmounting the RAID array, over even shutting down the EC2 instance.
+    4. After taking steps to halt all disk-related activity to the RAID array, take a snapshot of each EBS volume in the array.
+- When you take a snapshot of an attached Amazon EBS volume that is in use, the snapshot excludes data cached by applications or the operating system. For a single EBS volume, this is often not a problem. However, when cached data is excluded from snapshots of multiple EBS volumes in a RAID array, restoring the volumes from the snapshots can degrade the integrity of the array.
+- When creating snapshots of EBS volumes that are configured in a RAID array, it is critical that there is no data I/O to or from the volumes when the snapshots are created. RAID arrays introduce data interdependencies and a level of complexity not present in a single EBS volume configuration.
+
+## RDS monitoring
 - Amazon RDS provides metrics in real time for the operating system (OS) that your DB instance runs on.
-- You can view the metrics for your DB instance using the console, or consume the Enhanced Mornitoring JSON output from the CloudWatch Logs in a mornitoring system of your choice.
+- You can view the metrics for your DB instance using the console, or consume the Enhanced Monitoring JSON output from the CloudWatch Logs in a monitoring system of your choice.
 - By default, Enhanced Monitoring metrics are stored in the CloudWatch Logs for 30 days. To modify the amount of time the metrics are stored in the CloudWatch Logs, change the retention for the `RDSOSMetrics` log group in the CloudWatch console.
 - Certain differences between CloudWatch and Enhanced Monitoring Metrics
     - CloudWatch gathers metrics about CPU utilization from the hypervisor for a DB instance
@@ -291,6 +339,13 @@ S3 Intelligent-Tiering
     - You cannot encrypt the volume even if you unmount the volume. Remember taht encryption has to be done during volume creation.
     - You cannot create an encrypted snapshots of an unencrypted volume or change existing volume from unencrypted to encrypted. You have to create new encrypted volume and transfer data to the new volume.
 
+## Amazon EBS Snapshot
+- scenario: You have triggered the creation of a snapshot of your EBS volume and is currently on-going. At this point, what are the things that the EBS volume can or cannot do?
+![ebs_snapshots](../images/ebs_snapshots.png)
+- EBS snapshots occur asynchronously which makes the volume able to be used as normal while the snapshots is in progress.
+    - This means that point-in-time snapshot is created immediately, but the status of the snapshot is `pending` until the snapshot is complete (when all of the modified blocks have been transferred to Amazon S3), which can take several hours for large initial snapshots or subsequent snapshots where many blocks have changed. While it is completing, an in-progress snapshot is not affected by ongoing reads and writes to the volume hence, you can still use the volume.
+    - Although you can take a snapshot of a volume while a previous snapshot of that volume is in the pending status, having multiple pending snapshots of a volume may resutl in reduced volume performance until the snapshots complete.
+
 ## DynamoDB
 - NoSQL database service that provides fast and predictable performance with seamless scalability.
 - offers encryption at rest.
@@ -328,9 +383,254 @@ S3 Intelligent-Tiering
 - Although you may use ElasticCache as your database cache, it will not reduve the DynamoDB response time from milliseconds to microseconds as compared with DynamoDB DAX.
 - With Amazon EBS, you can use any of the standard RAID configurations that you can use with a traditional bare metal server, as long as that particular RAID configuration is supported by the operating system for your instance. This is because all RAID is accomplished at the software level. For greater I/O performance than you can achieve with a single volume, RAID 0 can stripe multiple volumes together; for on-instance redundancy, RAID 1 can mirror two volumes together.
 
+## Amazon ECS to ensure that database credentials are secure and that they cannot be viewed in plaintext on the cluster itself
+- enables you to inject sensitive data into your containers by storing your sensitive data in either **AWS Secrets Manager sercrets** or **AWS System Manager Parameter Store paramters** and then referencing them in your container definition.
+- For tasks that use **Fargate launch type**,
+    -  the only supported method is referencing a `Systems Manager Parameter Store parameter`. This feature also requires that your task use platform version 1.3.0 or later.
+- For tasks that use the **EC2 launch type**,
+    - both the `Secrets Manager secret` and `Systems Manager Parameter Store Parameter` methods described are supported. This featurer requires that your container instance have version 1.22.0 or later of the container agent. However, it is recommended to use the lastest container agent version.
+![ecs_to_secure_credentials](../images/ecs_to_secure_credentials.png)
+- Within your container definition, specify `secrets` with the name of the environment variable to set in the container and the full ARN of either the Secrets Manager secret or Systems Manager Parameter Store parameter containing the sensitive data to present to the container. The parameter that you reference can be from a different Region than the container using it, _but must be from within the same account._
+- Although you can use **Docker Secrets** to secure the sensitive database credentials, this feature is only applicable in **Docker Swarm**.
+- **In AWS, the recommended way to secure sensitive data is either through the use of Sercrets Manager or System Manager Parameter Store.**
+
+## Throttling limits and Caching of Amazon API Gateway
+- Amazon API Gateway provides throttling at multiple levels including global and by service call.
+- Throttling limits can be set for standard rates and bursts.
+    - i.e) API owners can set a rate limit of 1,000 requests per second for a specific method in their REST APIs, and also configure Amazon API Gateway to heandle a burst of 2,000 requests per second for a few seconds.
+    - Amazon API Gateway tracks the number of requests per second. Any request over the limit will receive a 429 HTTP response. The client SDKs generated by Amazon API Gateway retry calls automatically when met with this response.
+- You can add **caching** to API calls by provisioning an Amazon API Gateway cache and satisfying its size in gigabytes. The cache is provisioned for a specific stage of your APIs. This improves performance and reduces the traffic sent to your back end.
+![api_gateway_cache](../images/api_gateway_cache.png)
+- Cache settings allow you to control the way the cache key is built and the time-to-live (TTL) of the data stored for each method. Amazon API Gateway also exposes management APIs that help you invalidate the cache for each stage.
+※CloudFront only speeds up content delivery which provides a better latency experience for your users. It doesn't help much for the backend.
+
+## Understanding of API Gateway
+- API Gateway는 API 서버 앞단에서 모든 API 서버들의 엔드포인트를 단일화하여 묶어주고 API에 대한 인증과 인가 기능에서부터 메세지에 따라서 여러 서버로 라우팅 하는 고급기능까지 많은 기능을 담당할 수 있다.
+- Features
+    - Authentication/Authorization
+        - API call authentication on each endpoint
+        - API call authorization on each endpoint
+    - Issuing API Token
+    - API Routing
+        - Load Balancing to Backend API servers
+        - Routing based on message or header
+    - Offers endpoints to services and clients
+    - Offers common processing place
+        - because API Gateway is placed in front of all of API servers, every API calls pass by API Gateway
+    - Mediation
+    - Message format transformation
+    - Change Protocols
+https://bcho.tistory.com/1005 
+
+## Controling traffic coming in and out of VPC network
+- To control the traffic coming in and out of your VPC network, you can use the *network access control list (ACL)*.
+- It is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. This is best solution as you can easily add and remove the restriction in a matter of minutes. 
+- Although a security group acts as a firewall, it will only control both inbound and outbound traffic at the instance level and not on the whole VPC.
+- Adding a firewall in the underlying operating system of the EC2 instance is not enough; the attacker can just connect to other AWS resources since the network access control list still allows them to do so.
+
+## Amazon Inspector
+- automated security assessment service that helps you test the network accessibility of your Amazon EC2 instances and the security state of your applications running on the instances.
+
+## Scenario: A software company has moved a legacy application from an on-premises data center to the cloud. The legacy application requires a static IP address hard-coded into the backend, which blocks you from using an ALB. What would you take to apply high availability and fault tolerance to this application without ELB?
+![custom_script_to_monitor_one instance another](../images/custom_script_to_monitor_one_instance_another.PNG)
+- For this scenario, it is betst to set up a self-monitoring EC2 instance with a virtual IP address. You can use an Elastic IP and then write a custom script that checks the health of the EC2 intance and if the intance stops responding, the script will switch the Elastic IP address to a standby EC2 instance.
+- Custom script enables one Amazon EC2 instance to monitor another Amazon EC2 instance and take over a private "virtual" IP address on instance failure. When used with two instances, the script enables a High Availability scenario where instances monitor each other and take over a shared virtual IP address if the other instance fails. It could easily be modified to run on a third-party monitoring or witness server to perform the VIP swapping on behalf of the two monitored nodes.
+- Although an ASG can scale out if one of the EC2 instances became unhealthy, you still cannot directly assign an EIP to an ASG. In addition, you are only limited to use EC2 instance status checks for your ASG if you do not have an ELB which can provide you the actual health cehck of your application (using its port), and not just the health of the EC2 instance.
+
+## Signed URLs and Signed Cookies of CloudFront
+- Scenario: A web application is using CloudFront to distribute their images, videos, and other static contents stored in their S3 bucket to its users around the world. The company has recently introduced a new member-only access to some of its high quality media files. There is a requirement to provide access to multiple private media files only to their paying subscribers without having to change their urrent URLs.
+![cloudfront_to_restrict_access_to_private_content](../images/cloudfront_to_restrict_access_to_private_content.png)
+- CloudFront signed URLs and signed cookies provide the same basic functionality:
+    - they allow you to control who can access your content. If you want to serve private content through CloudFront and you're trying to decide whether to use signed URLs or signed cookies, consider the following:
+    - Use **signed URLs** for the following cases:
+        - You want to use an `RTMP` distribution. Signed cookies aren't supported for RTMP distributions.  
+            - RTMP Distributions : Real-Time Messaging Protocol (RTMP) distributions stream media files using Adobe Media Server and the Adobe RTMP. An RTMP distribution must use an Amazon S3 bucket as the origin.
+        - You want to restrict access to individual files, for example, an installation download for your application.
+        - Your users are using a client (i.e. a custom HTTP client) that doesn't support cookies.
+    - use **singed cookies** for the following cases:
+        - You want to provide access to multiple restricted files, for example, all of the files for a video in HLS format or all of the files in the subscribers' area of a website.
+        - You don't want to change your current URLs.
+- **Match Viewer** is an Origin Protocol Policy which configures CloudFront to communicate with your origin using HTTP or HTTPS, depending on the protocol of the viewer request. CloudFront caches the object only once even if viewers make requests using both HTTP and HTTPS protocols.
+- Signed URLs are primarily used for providing access to individual files, as shown on the above explanation. In addition, if they don't want to change their current URLs, implementing Signed Cookies is more suitable than Signed URLs.
+
+## You are designing a multi-tier web application architecture that consits of a fleet of EC2 instances and an Oracle relational database server. It is required that the database is highly available and that you have full control over its underlying operating system. Which AWS sergice will you use for your database tier?
+- To achieve this requirement, you can deploy your Oracle database to Amazon EC2 instances with data replication between two different Availability Zones. The deployment of this architecture can easily be achieved by using Cloudformation and Quick Start.
+- **AWS Quick Start** deploys Oracle primary database (using the preconfigured, general-purpose starter database from Oracle) on an Amazon EC2 instance in the first AZ. It then sets up a sencod EC2 instance in a second AZ, copies the primary database to the second instance by using the `DUPLICATE` command, and configures Oracle Data Guard.
+
+## instance termination policy of ASG
+- Default termination policy is designed to help ensure that your network architecture spans AZ evenly. With the default termination policy, the behavior of the ASG is as follows:
+    1. If there are instances in multiple AZ, choose the AZ with the most instances and at least one instace that is not protected from scale in. If there is more than one AZ with this number of instances, choose the AZ with the instances that use the oldest launch configuration.
+    2. Determine which unprotected instances in the selected AZ use the oldest launch configuration. If there is one such instance, terminate it.
+    3. If there are multiple instances to terminate based on the above criteria, determine which unprotected instances are closest to the next billing hour. (THis helps you maximize the use of your EC2 instances and manage your Amazon EC2 usage costs.) If there is one such instance, terminate it.
+    4. If there is more than one unprotected instnace closest to the next billing hour, choose one of these instances at random.
+- The following flow diagram illustrates how the default termination policy works:
+![asg_default_termination_policy](../images/asg_default_termination_policy.png)
+
+## EBS Types and features
+- On a given volume configuration, certain I/O characteristics drive the performance behavior for your EBS volumes.
+    - SSD-backed volumes, such as General Purpose SSD(`gp2`) and Provisioned IOPS SSD(`io1`), deliver consistent performance whether an I/O operation is random or sequential.
+    - HDD-backed volumes like Throughput Optimized HDD(`st1`) and Cold HDD(`sc1`) deliver optimal performance only when I/O operations are large and sequential.
+![ssd_vs_hdd](../images/ssd_vs_hdd.png)
+- Provisioned IOPS SSD(`io1`) volumes are designed to meet the needs of I/O intensive workloads, particulary database workloads, that are sensitive to storage performance and consistency.
+- Unlike General Purpose SSD(`gp2`), which uses a bucket and credit model to calculate performance, an `io1` volume allows you to specify a consistent IOPS rate when you create the volume, and Amazon EBS delivers within 10 percent of the provisioned IOPS performance 99.9 percent of the time over a given year.
+
+## RDS and Non-RDS
+![rds_and_non_rds](../images/rds_and_non_rds.png)
+
+## Amazon Aurora
+- fully managed relational database engine that's comapatible with **MySQL** and **PostgreSQL**
+- With some workloads, Aurora can deliver up to five times the throughput of MySQL and up to three times the throughput of PostgreSQL.
+- Aurora includes a high-performance storage subsystem. The underlying storage grows automatically as needed, up to 64 terabytes. **The minimum storage is 10GB**.
+- Aurora will keep your database up-to-date with the lastest patches.
+- Aurora supports quick, efficient clonning operations.
+- Aurora is fault-tolerant and self-healing
+- DB Clusters
+    - An Aurora **DB cluster** consists of one or more DB instances and a cluster volume that manages the data for those DB instances.
+    - An Aurora **cluster volume** is a virtual database storage volume that spans multiple AZs, with each AZ having a copy of the DB cluster data.
+    - Cluster Types:
+        - **Primary DB instance**: supports *read and write* operations, and performs all of the data modifications to the cluster volume. Each Aurora DB cluster has one primary DB instance.
+        - **Aurora Replica**: connects to the same storage volume as the primary DB instance and supports only read operations. Each Aurora DB cluster can have up to 15 Aurora Replicas in addition to the primary DB instance. Aurora automatically fails over to an Aurora Replica in case the primary DB instance becomes unavailable. You can specify the failover priority for Aurora Replicas. Aurora Replicas can also offload read workloads from the primary DB instance.
+- **Aurora Endpoints**
+    - Using endpoints, you can map each connection to the appropriate instance or group of instances based on your use case.
+    - **Cluster endpoint** (also known as **writer endpoint**): connects to the current primary DB instance for a DB cluster. This endpoint is the only one that can perform write operations. Each Aurora Db cluster has one cluster endpoint and one primary DB instance.
+        - To perform DDL statements you can connect to whichever instance is the primary instance.
+        - This endpoint is the only that can perform write operations in the database such as DDL statements, which is perfect for handling production traffic but not suitable for handling queries for reporting.
+        - This kind of endpoint doesn't have the functionality to automatically perform load-balancing among all the Aurora Relicas of your cluster.
+    - **Reader endpoint**: connects to one of the available Aurora Replicas for that DB cluster. Each Aurora Db cluster has one reader endpoint. The reader endpoint provides load-balancing support for read-only connections to the DB cluster. Use the reader endpoint for read operations, such as queries. You can't use the reader endpoint for write operations.
+        - To perform queries, you can connect to the reader endpoint, with Aurora automatically performing load-balancing among all the Aurora Replicas.
+    - **Custom endpoint**: represents a set of DB instances that you choose. When you connect to the endpoint, Aurora performs load balancing and chooses one of the instances in the group to handle the connection. **You define which instnaces this endpoint refers to, and you decide what purpose the endpoint serves**.
+        - For clusters with DB instances of different capacities or configurations, you can connect to custom endpoints associated with different subsets of DB instances.
+        - Custom endpoint provides load-balanced database connections based on criteria other than the read-only or read-write capability of the DB instances.
+        - i.e. you might define a custom endpoint to connect to instances that use a particular AWS instance class or a particular DB paramter group. Then you might tell particular groups of users about this custom endpoint. For example, you might direct internal users to low-capacity instances for report generation or ad hoc (one-time) querying, and direct production traffic to high-capacity instances.
+    - **Instance endpoint**: connects to a specific DB instance within an Aurora cluster. The instance endpoint provides direct control over connections to the DB cluster. **The main way that you use instance endpoints is to diagnose capacity or performance issues that affect one specific instance in an Aurora cluster.**
+        - For diagnosis or tuning, you can connect to a specific instance endpoint to examine details about a specific DB instance.
+    - When you connect to an Aurora cluster, the host name and port that you specify point to an intermediate handler called an _endpoint_.
+- DB Cluster Configurations
+    - Aurora supports two types of instance classes.
+        - **Memory Optimized**
+        - **Burstable Performance**
+    - **Aurora Serverless** is an on-demand, autoscaling configuration for Amazon Aurora (MySQL-compatitble edition). An _Aurora Serverless DB cluster__ automatically starts up, shuts down, and scales up or down capacity based on your application's needs.
+        - A non-Serverless DB cluster for Aurora is called a _provisioned DB cluster_.
+        - Instead of provisioning and managing database servers, you specify **Aurora Capacity Units (ACUs)**. Each ACU is a combination of processing and memory capacity.
+        - You can choose to pause your Aurora Serverless DB cluster after a given amount of time with no activity. The DB cluster automatically resumes and services the connection requests after receiving requests.
+        - Aurora Serverless does not support fast failover, but it supports __automatic multi-AZ failover__
+        - The cluster volume for an Aurora Serverless cluster is always encrypted. You can choose the encryption key, but not turn off encryption.
+        - You can set the following specific vlaues:
+            - __Minimum Aurora capacity unit__: Aurora Serverless can reduce capacity down to this capacity unit.
+            - __Maximum Aurora capacity unit__: Aurora Serverless can increase capacity up to this capacity unit.
+            - __Pause after inactivity__: The amount of time with no database traffic to scale to zero processing capacity.
+        - You can now share snapshots of Aurora Serverless DB clusters with other AWS accounts or publicly. Snapshots can also be copied to other AWS regions for cross-region sharing.
+    -  When you reboot the primary instance of an Aurora DB cluster, RDS also automatically restarts all of the Aurora Replicas in that DB cluster. **When you reboot the primary instance of an Aurora DB cluster, no failover occurs. When you reboot an Aurora Replica, no failover occurs.**
+    - **Deletion protection** is enabled by default when you create a production DB cluster using the AWS Management Console. However, deletion protection is disabled by default if you create a cluster using the AWS CLI or API.
+        - For Aurora MySQL, you can't delete a DB instance in a DB cluster if both of the following conditions are true:
+            - The DB cluster is a Read Replica of another Aurora DB cluster.
+            - The DB instance is the only instance in the DB cluster.
+- Security
+    - Use IAM to control access.
+    - To control which devices and EC2 instances can open connections to the endpoint and port of the DB instance for Aurora DB clusters in a VPC, you use a VPC security group.
+    - You can make endpoint and port connections using **Transport Layer Security (TLS) / Secure Sockets Layer (SSL)**. In addition, firewall rules can control whether devices running at your company can open connetions to a DB instance.
+    - Use RDS encryption to secure your RDS instances and snapshots at rest.
+- Aurora for MySQL
+    - Performance Enhancements
+        - Push-Button Compute Scaling
+        - Storage Auto-Scaling
+        - Low-Latency Read Replicas
+        - **Serverless Configuration**
+        - Custom Database Endpoints
+        - _Fast insert accelerates parallel_ inserts sorted by primary key
+        - __Aurora MySQL parallel query__ is an optimization that parallelizes some of the I/O and computation involved in processing data-intensive queries.
+        - You can use the _high-performance Advanced Auditing_ feature in Aurora MySQL to audit database acitivity. To do so, you enable the collection of audit logs by setting several DB cluster paramters.
+    - Scaling
+        - Instnace scaling: scale your Aurora DB cluster by modifying the DB instance class for each DB instance in the DB cluster.
+        - Read Scaling: as your read traffic increases, you can create additional Aurora Replicas and connect to them directly to distribute the read load for your DB cluster.
+![aurora_vs_mysql](../images/aurora_vs_mysql.png)
+- Aurora for PostgreSQL
+    - Performance Enhancements
+        - Push-Button Compute Scaling
+        - Storage Auto-Scaling
+        - Low-Latency Read Replicas
+        - Custom Database Endpoints
+    - Scaling
+        - Instance scaling
+        - Read scaling
+    - Amazon Aurora PostgreSQL now supports logical replication. With logical replication, you can replicate data changes from your Aurora PostgreSQL database to other databases using native PostgreSQL replication slots, or data replication tools such as the AWS Database Migration Service.
+    - Rebooting the primary instnace of an Amazon Aurora DB cluster also automatically reboots the Aurora Replicas for that DB cluster, in order to re-establish an entry point that guarantees read/write consistency across the DB cluster.
+
+## Amazon MQ
+![amazon_mq](../images/amazon_mq.png)
+- Amazon MQ, Amazon SQS, and Amazon SNS are messageing services that are suitable for anyone from startups to enterprises.
+- If you're using messaging with existing applications and want to move your messaging service to the cloud quickly and easily, it is recommended that you consider Amazon MQ. 
+    - It supports industry standard APIs and protocols so you can switch from any standards-based message broker to Amazon MQ without rewriting the messaging code in your applications.
+- If you're building brand new applications in the cloud, then it is highly recommended that you consider Amazon SQS and Amazon SNS.
+    - Amazon SQS and SNS are lightweight, fully-managed message queue and topic services taht scale almost infinitely and provide simple, easy-to-use APIs. 
+        - Unlike Amazon MQ, Amazon SQS is a fully managed message queuing service, it doesn't support an extensive list of industry-standard messaging APIs and protocol. 
+        - Moreover, using Amazon SQS requires you to do additional changes in the messaging code of applications to make it compatible.
+        - Amazon SNS is more suitable as a pub/sub messaging service instead of a messaging broker service.
+    - You can use Amazon SQS and SNS to decouple and scale microservices, distributed systems, and serverless applications, and improve reliability.
+
+## Amazon SWF
+- Amazon Simple Workflow Service (SWF) makes it easy to build applications that coordinate work across distributed components.
+- fully-managed state tracker and task coordinator service.
+- helps developers build, run and scale background jobs that have parellel or sequential steps.
+
 ## TCO
 - total cost of onwership
 - IT 용어 <컴퓨터> 소유 총비용
 ## LDAP
 - lightweight directory access protocol
 - 경량 디렉토리 액세스 프로토콜(디렉토리 목록, 떄로는 인터넷에 엑세스할 때 사용하는 간단한 프로토콜)
+
+Elastic Beanstalk vs CloudFormation vs OpsWorks vs CodeDeploy
+===
+### AWS Elastic Beanstalk  
+- makes it even easier for developers to **quickly deploy and manage applications** in the AWS Cloud.
+- Devleopers simply upload their application, and Elastic Beanstalk **automatically handles the deployment details** of capacity provisioning, load balancing, auto-scaling, and application health monitoring
+- This **platform-as-a-service(PaaS) solution** is typically for those who want to deploy and manage their applications within minutes in the AWS Cloud without worrying about the undelying infrastructure.
+- Elastic Beanstalk also supports deployment versioning. It maintains a copy of older deployments so that it is easy for the developer to rollback any changes made on the application.
+AWS CloudFormation  
+- a service that gives developers and businesses an easy way to create a **collection of related AWS resources** and provision them in an orderly and predictable fashion. This is typically known as **"infrastructure as code"**.
+- Main difference between CloudFormation and Elastic Beanstalk is
+    - that CloudFormation deals more with the AWS infrastructure rather than applications.
+        - AWS CloudFormation introduces two concepts:
+            - **template**, a JSON or YAML-format, text-based file that describes all the AWS resources and configurations you need to deploy to run your application.
+            - **stack**, which is the set of AWS resources that are created and managed as a single unit when AWS CloudFormation instantiates a template.
+- also supports a rollback feature through template version controls. When you try to update your stack but the deployment failed midway, CloudFormation will automatically revert the changes back to their previous working states.
+- supports Elastic Beanstalk application environments. This allows you, for example, to create and manage an AWS Elastic Beanstalk-hosted application along with an RDS database to store the application data.
+### AWS OpsWorks  
+- is a configuration management service that provides managed instances of Chef and Puppet.
+- lets you use **Chef** and **Puppet** to automate how servers are configured, deployed, and managed across your EC2 instances or on-premises compute environments.
+- offers 3 services:
+    - Chef Automate
+    - Puppet Enterprise
+    - OpsWorks Stacks
+- OpsWorks Stacks lets you create stacks that help you manage cloud resources in specialized groups called **layers**. **A layer represents a set of EC2 instances that serve a particular purpose.** Layers depend on **Chef recipes** to handle tasks such as installing packages on instances, deploying apps, and running scripts.
+- Compared to CloudFormation, OpsWorks focuses more on orchestration and software configuration, and less on what and how AWS resources are procured.
+### AWS CodeDeploy  
+- is a service that coordinates application deployments across EC2 instances and instances running on-premises. It makes it easier for you to rapidly release new features, helps you avoid downtime during deployment, and handles the complexity of updating your applications.
+- Unlike, Elastic Beanstalk, Code Deploy does not automatically handle capacity provisioning, scaling, and monitoring.
+- Unlike, CloudFormation and OpsWorks, CodeDeploy does not deal with infrastructure configuration and orchestration
+- AWS CodeDeploy is a building block service focused on helping developers deploy and update software on any instance, including EC2 instances and instances running on-premises. AWS Elastic Beanstalk and AWS OpsWorks are end-to-end application management solutions.
+- You create a **deployment configuration on file** to specify how deployments proceed.
+- CodeDeploy complements CloudFormation well when deploying code to infrastructure that is provisioned and managed with CloudFormation.
+### Additionally  
+![deploy_and_operation_related_apps](../images/deploy_and_operation_related_apps.png)  
+- Elastic Beanstalk, CloudFormation, or OpsWorks are particularly useful for **blue-green deployment method** as they provide a simple way to clone your running application stack.
+- CloudFormation and OpsWorks are best suited for the **prebaking AMIs**.
+- CodeDeploy and OpsWorks are best suited for performing **in-place application upgrades**. For **desposable upgrades**, you can set up a cloned environment with Elastic Beanstalk, CloudFormation, and OpsWorks.
+
+===
+## EMR
+- Elastic Map Reduce
+- used for large scale data warehouse service for use with business intelligence tools.
+
+===
+## Instance Metadata
+- is the data about your instance that you can use to configure or manage the running instance.
+- You can get the instance ID, public keys, public IP address and many other information from the instance metadata by firing a URL command in your instance
+
+===
+## AWS IoT Core
+- a managed cloud service that lets connected devices easily and securely interact with cloud applications and other devices.
+- provides secure communication and data processing across different kinds of connected devices and locations so you can easily build IoT applications.
+
+
