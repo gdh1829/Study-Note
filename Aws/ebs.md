@@ -8,6 +8,15 @@ EBS는 EC2 인스턴스에서 제공하는 기본 용량 보다 더 사용해야
 - 사용자가 삭제하기 전까지는 데이터를 안전하게 유지.  
 - Elastic Block Store에서 Block은 Block Device라고 하여 Unix/Linux 계열 OS에서 일정한 크기(Block) 단위로 읽고 쓰는 저장 장치를 부르는 용어. 자기테이프, 플로피디스크, 하드디스크, 광학디스크, SSD 등의 플래시메모리가 대표적.  
 
+## Features
+- When you create an EBS volume in an AZ, it is automatically replicated within that zone to prevent data loss due to a failure of any single hardware component.
+- An EBS volume can only be attached to one EC2 instance at a time.
+- After you create a volume, you can attach it to any EC2 instance in the same AZ
+- An EBS volume is off-instance storage that can persist independently from the life of an instance. You can specify not to terminate the EBS volume when you terminate the EC2 instance during instance creation.
+- EBS volumes support live configuration changes while in production which means that you can modify the volume type, volume size, and IOPS capacity without service interruptions.
+- Amazon EBS encryption uses 256-bit Advanced Encryption Standard algorithms (AES-256)
+- EBS Volumes offer 99.999% SLA.
+
 ## EBS의 기본개념
 - Volume: EBS의 가장 기본적인 형태로 OS에서 바로 사용 가능한 형태
 - Image: AMI(Amazon Machine Image)를 줄여 부르는 말. OS가 설치된 형태이며 이 AMI로 EC2 instance를 생성

@@ -106,6 +106,14 @@ S3 Intelligent-Tiering
         - Change the versioning state of your bucket
         - Permanently delete an object version
 
+## Prerequisites for routing traffic to a website that is hosted in an Amazon S3
+![s3_webhosting_with_route53](../images/s3_webhosting_with_route53.png)
+- An S3 bucket that is configured to host a static website. **The bucket must have the same name as your domain or subdomain**. For example, if you want to use the subdomain portal.dev.com, the name of the bucket must be portal.dev.com.
+- A registered domain name. You can use Route53 as your domain register, or you can use a different register.
+- Route53 as the DNS service for the domain. If you register your domain name by using Route 53, we automatically configure Route 53 as the DNS service for the domain.
+※ Route 53 MX record specifies the mail server responsible for accepting email messages on behalf of a domain name.  
+※ You only need to enable Cross-Origin Resource Sharing (CORS) when your client web application on one domain interacts with the resources in a different domain.  
+
 ## S3 Pre-Signed URLs vs CloudFront Singed URLs vs Origin Access Identity(OAI)
 
 ## how to ensure data security
@@ -632,5 +640,36 @@ AWS CloudFormation
 ## AWS IoT Core
 - a managed cloud service that lets connected devices easily and securely interact with cloud applications and other devices.
 - provides secure communication and data processing across different kinds of connected devices and locations so you can easily build IoT applications.
+
+===
+## SNS
+- Amazon Simple Notification Service
+- highly available, durable, secure, fully managed pub/sub messaging service that enables you to decouple microservices, distributed systems, and serverless applications.
+- When you want to monitor your EC2 instances, you should use SNS instead of SES (Simple Email Service)
+
+===
+### API Gateway
+![apigateway](../images/apigateway.png)
+- fully managed service that makes it easy for developers to create, publish, maintain, monitor, and secure APIs at any scale.
+- With a few clicks in the AWS Management COnsole, you can create an API that acts as a "front door" for applications to access data, business logic, or functionality from your back-end services, such as workloads running on Amazon Elastic Compute Cloud (Amzon EC2), code running on AWS Lambda, or any web application.
+- Since it can use AWS Lambda, you can run your APIs without servers.
+- handles all the tasks involved in accepting and processing up to hundreds of thousands of concurrent API calls, including traffic management, authorization and access control, mornitoring, and API version management.
+- has no minimum fees or startup costs. You pay only for the API calls you receive and the amount of data transferred out.
+
+===
+## Decoupled Architecture
+-  Decoupled architecture is a type of computing architecture that enables computing components or layers to execute independently while still interfacing with each other.
+- Amazon SQS and SWF (Simple Workflow Service) are the services that you can use for creating a decoupled architecture in AWS.
+- Amazon SQS offers reliable, highly-scalable hosted queues for storing messages while they travel between applications or microservices. It lets you move data between distributed application components and helps you decouple these components.
+- Amazon SWF is a web service that makes it easy to coordinate work across distributed application components.
+
+
+===
+## ENI
+- Elastic Network Interface (ENI) is a logical networking component in a VPC that represents a virtual network card.
+- You can attach a network interface to an EC2 instance in the following ways:
+    - When it's running (hot attach)
+    - When it's stopped (warm attach)
+    - When the instance is being launched (cold attach)
 
 
