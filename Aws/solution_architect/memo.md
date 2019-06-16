@@ -19,6 +19,24 @@ To configure your ASG to scale based on a schedule, you create a scheduled actio
 
 You can create scheduled actions for scaling one time only or for scaling on a recurring schedule.
 
+## instance termination policy of ASG
+- Default termination policy is designed to help ensure that your network architecture spans AZ evenly. With the default termination policy, the behavior of the ASG is as follows:
+    1. If there are instances in multiple AZ, choose the AZ with the most instances and at least one instace that is not protected from scale in. If there is more than one AZ with this number of instances, choose the AZ with the instances that use the oldest launch configuration.
+    2. Determine which unprotected instances in the selected AZ use the oldest launch configuration. If there is one such instance, terminate it.
+    3. If there are multiple instances to terminate based on the above criteria, determine which unprotected instances are closest to the next billing hour. (This helps you maximize the use of your EC2 instances and manage your Amazon EC2 usage costs.) If there is one such instance, terminate it.
+    4. If there is more than one unprotected instance closest to the next billing hour, choose one of these instances at random.
+- The following flow diagram illustrates how the default termination policy works:
+![asg_default_termination_policy](../images/asg_default_termination_policy.png)
+
+## ASG cooldown period
+![ASG_cooldown_period](../images/ASG_cooldown_period.png)
+- It ensures that the ASG does not launch or terminate additional EC2 instances before the previous scaling activity takes effect.
+- Its default value is 300 sencods.
+- It is configurable setting for your ASG.
+- AFter the ASG dynamically scales using a simple scaling policy, it waits for the cooldown period to complete before resuming scaling activities.
+
+
+
 IAM
 ===
 You can authenticate to your DB instance using AWS Identity and Access Management(IAM) database authentication. IAM database authentication works with MySQL and PostgreSQL. With this authentication method, you don't need to use a password when you connect to a DB instance. Instead, you use an authentication token.  
@@ -430,11 +448,27 @@ S3 Intelligent-Tiering
     - Change Protocols
 https://bcho.tistory.com/1005 
 
+Network
+===
 ## Controling traffic coming in and out of VPC network
 - To control the traffic coming in and out of your VPC network, you can use the *network access control list (ACL)*.
 - It is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. This is best solution as you can easily add and remove the restriction in a matter of minutes. 
 - Although a security group acts as a firewall, it will only control both inbound and outbound traffic at the instance level and not on the whole VPC.
 - Adding a firewall in the underlying operating system of the EC2 instance is not enough; the attacker can just connect to other AWS resources since the network access control list still allows them to do so.
+
+## ACL
+- A **Network Access Control List (ACL)** is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets.
+- You might set up network ACLs with rules similar to your security groups in order to add an additional layer of security to your VPC.
+- Network ACL Rules are **evaluated by rule number, from lowers to highest**, and executed **immediately** when a matching allow/deny rule is found.
+
+## VPN connection
+- Situation: Your client is an insurance company that utilizes SAP HANA for their day-to-day ERP operations. Since you can't migrate this database due to customer preferences, you need to integrate it with your current AWS workload in your VPC in which you are required to establish a site-to-site VPN connection. What needs to be configured outside of the VPC for you to have a successful site-to-site VPN connection?
+- By default, instances that you launch into a VPC can't communicate with your own network. You can  enable access to your network from your VPC by attaching a **Virtual Private Gateway** to the VPC, creating **route table**, updating your **security group rules**, and creating an **AWS managed VPN connection**.
+- Although the term VPN connection is a general term, in the Amazon VPC docs, a VPN connection refers to the connection between your VPC and your own network. AWS supports Internet Protocol Security (IPsec) VPN connections.
+- A Customer Gateway is a physical device or software application on your side of the VPN connection.
+- To create a VPN connection, you must create a customer gateway resource in AWS, which provides information to AWS about your customer gateway device. Next, you have to set up an Internet-routable IP address (static) of the customer gateway's external interface.
+- The following diagram illustrates single VPN connections. The VPC has an attached virtual private gateway, and your remote network includes a customer gateway, which you must configure to enable the VPN connection. You set up the routing so that any traffic from the VPC bound for your network is routed to the virtual private gateway.
+![vpn_connection](../images/vpn_connection.png)
 
 ## Amazon Inspector
 - automated security assessment service that helps you test the network accessibility of your Amazon EC2 instances and the security state of your applications running on the instances.
@@ -464,15 +498,6 @@ https://bcho.tistory.com/1005
 ## You are designing a multi-tier web application architecture that consits of a fleet of EC2 instances and an Oracle relational database server. It is required that the database is highly available and that you have full control over its underlying operating system. Which AWS sergice will you use for your database tier?
 - To achieve this requirement, you can deploy your Oracle database to Amazon EC2 instances with data replication between two different Availability Zones. The deployment of this architecture can easily be achieved by using Cloudformation and Quick Start.
 - **AWS Quick Start** deploys Oracle primary database (using the preconfigured, general-purpose starter database from Oracle) on an Amazon EC2 instance in the first AZ. It then sets up a sencod EC2 instance in a second AZ, copies the primary database to the second instance by using the `DUPLICATE` command, and configures Oracle Data Guard.
-
-## instance termination policy of ASG
-- Default termination policy is designed to help ensure that your network architecture spans AZ evenly. With the default termination policy, the behavior of the ASG is as follows:
-    1. If there are instances in multiple AZ, choose the AZ with the most instances and at least one instace that is not protected from scale in. If there is more than one AZ with this number of instances, choose the AZ with the instances that use the oldest launch configuration.
-    2. Determine which unprotected instances in the selected AZ use the oldest launch configuration. If there is one such instance, terminate it.
-    3. If there are multiple instances to terminate based on the above criteria, determine which unprotected instances are closest to the next billing hour. (THis helps you maximize the use of your EC2 instances and manage your Amazon EC2 usage costs.) If there is one such instance, terminate it.
-    4. If there is more than one unprotected instnace closest to the next billing hour, choose one of these instances at random.
-- The following flow diagram illustrates how the default termination policy works:
-![asg_default_termination_policy](../images/asg_default_termination_policy.png)
 
 ## EBS Types and features
 - On a given volume configuration, certain I/O characteristics drive the performance behavior for your EBS volumes.
@@ -672,4 +697,40 @@ AWS CloudFormation
     - When it's stopped (warm attach)
     - When the instance is being launched (cold attach)
 
+===
+## Amazon DLM
+- Amazon Data Lifecycle Manager
+- You can use Amazon DLM to automate the creation, retention, and deletion of snapshots taken to back up your Amazon EBS volumes.
+- Automating snapshot management helps you to:
+    - Protect valuable data by enforcing a regular backup schedule.
+    - Retain backups as required by auditors or internal compliance.
+    - Reduce storage costs by deleting outdated backups.
+- Combined with the mornitoring features of Amazon CloudWatch Events and AWS CloudTrail, Amazon DLM provides a complete backup solution for EBS volumes at no additional cost.
+※ Amazon Storage Gateway is used only for creating a backup of **data from your on-premises server** and not from the Amazon Virtual Private Cloud.
 
+===
+## Security and Compliance between AWS and Customers
+![shared_responsibility](../images/shared_responsibility.png)
+
+===
+## Amazon WAF
+- Web Application Firewall (WAF)
+- helps protect your web applications from common web exploits.
+
+## Amazon Glue
+- fully managed **extract, transform, and load (ETL)** service that makes it easy for customers to prepare and load their data for analytics.
+
+Elastic Load Balancing
+===
+- Application Load Balancer
+    - If you need flexible application management and TLS termination, then ALB is recommended
+    - An ALB functions at the application layer, the seventh layer of the Open Systems Interconnection (OSI) model. 
+    - After the load balancer receives a request, it evaluates the listner rules in priority order to determine which rule to apply, and then selects a target from the target group for the rule action.
+    - You can configure listener rules to route requests to different target groups based on the content of the application traffic. 
+    - Routing is performed independently for each target group, even when a target is registered with multiple target groups.
+    ![alb_listener_rules](../images/alb_listener_rules.png)
+    - ALB supports TLS termination capabilities, path-based routing, host-based routing and support for containerized applications.
+- Network Load Balancer
+    - If extreme performance and static IP is needed for your application, NLB is recommended
+- Classic Laod Balancer
+    - If your application is built within the EC2 Classic network, then you should use CLB.
