@@ -44,3 +44,31 @@ VPC 외부에서는 public IP를 통해서만 인스턴스에 접근할 수 있�
 VPC 외부와 내부에서 같은 인스턴스의 DNS를 nslookup를 사용해 조회해보면 알 수 있다. 같은 DNS를 조회하지만 조회된 IP가 각각 다르게 나온다.
 
 즉, VPC 외부에서는 Public IP를, 내부에서는 Private IP를 반환하는 것을 알 수 있다.
+
+The following VPC Peering connection configurations are not supported
+===
+1. Overlapping CIDR Blocks
+2. Transitive Peering
+3. Edge to Edge Routing Through a Gateway or Private Connection
+
+## Overlapping CIDR Blocks
+- You cannot create a VPC peering connection between VPCs with matching or overlapping IPv4 CIDR blocks.
+    - VPC A (172.16.0.0/16)  <---  X  --->  VPC B (172.16.0.0/16)
+- If the VPCs have multiple IPv4 CIDR blocks, you cannot create a VPC peering connection if any of the CIDR blocks overlap (regardless of whether you intend to use the VPC peering connection for communication between the non-overlapping CIDR blocks only).
+    - VPC A (10.0.0.0/16, 10.3.0.0/16)  <---  X  --->  VPC B (172.16.0.0/16, 10.2.0.0/16)
+- This limitation also applies to VPCs that have non-overlapping IPv6 CIDR blocks. Even if you intend to use the VPC peering connection for IPv6 communication only, you cannot create a VPC peering connection if the VPCs have matching or overlapping
+
+## Transitive Peering
+![vpc_doesnt_support_transitive_peering](./images/vpc_doesnt_support_transitive_peering.png)
+- You have a VPC peering connection between VPC A and VPC B (pcx-aaaabbbb), and between VPC A and VPC C (pcx-aaaacccc). There is no VPC peering connection between VPC B and VPC C. 
+    - You cannot route packets directly from VPC B to VPC C through VPC A.
+
+## Edge to Edge Routing Through a Gateway or Private Connection
+- If either VPC in a peering relationship has one of the following connections, you cannot extend the peering relationship to that connection:
+    1. A VPN connection or an AWS Direct Connect connection to a corporate network
+    2. An internet connection through an internet gateway
+    3. An internet conneciton in a private subnet through a NAT device
+    4. A VPC endpoint to an AWS service; for example, an endpoint to Amazon S3
+    5. (IPv6) A ClassLink connection. You can enable IPv4 communication between a linked EC2-Classic instance and instances in a VPC on the other side of a VPC peering connection. However, IPv6 is not supported in EC2-Classic, so you cannot extend this connection for IPv6 communication.
+![vpc_peering_doesnt_support_edge2edge_routing_through_gateway_or_private_connection](./images/vpc_peering_doesnt_support_edge2edge_routing_through_gateway_or_private_connection.png)
+- For example, if VPC A and VPC B are peered, and VPC A has any of these connections, then instances in VPC B cannot use the connection to access resources on the other side of the connection. Similaryly, resources on the other side of a connection cannot use the connection to access VPC B.

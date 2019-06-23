@@ -1,6 +1,13 @@
 AWS terminology
 ===
 
+## Differences between Fault Tolerance and High Availability
+- minimum number of running instances that are required for service operation
+- For example,
+  - You have a system that requires a minimum of 4 running instanes and currently has 6 running instances deployed in two AZs. There was a component failure in one of the AZs which knocks out 3 instances.
+  - In this case, the system can still be regarded as Highly Available since there are still instances running that can accomodate the requests.
+  - However, it is not Fault Tolerant since the required minimum of four instances have not been met.
+
 ## EBS(Elastic Block Store)
  * 가상화 서비스 된 일종의 하드디스크
  * 파일 저장은 S3를 사용하고 EC2를 웹서버 용도로만 쓴다면 큰 용량 설정은 필요 없다. 1GB정도.

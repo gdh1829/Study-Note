@@ -87,48 +87,11 @@ Lambda deployment configuration types to specify how traffic is shifted from the
 - A __Route Origin Authorization (ROA)__ is a document that you can create through your Regional Internet Registry (RIR), such as the American Registry for Internet Numbers (ARIN) or Réseaux IP Européens Network Coordination Centre (RIPE). It contains the address range, the ASNs that are allowed to advertise the address range, any an expiration date
 - The ROA authorizes Amazon to advertise an address range under a specific AS number. However, it does not authorize your AWS account to bring the address range to AWS. To authorize your AWS account to bring an address range to AWS, you must publish a self-signed X509 certificate in the RDAP remarks for the address range. The certificate contains a public key, which AWS uses to verify the authorization-context signature that you provide. You should keep your private key secure and use it to sign the authorization-context message.
 
-S3 Storage Classes
-===
-- S3 Standard: General purpose
-- S3 Intelligent-Tiering: Unknown or chaning access
-- S3 Standard-Infrequent Access (S3 Standard-IA): Infrequent access
-- S3 Zone-Infrequent Access (S3 One Zone-IA): Infrequent access, non-critical data
-- S3 Glacier: Archive
-- S3 Glacier Deep Archive: Archive, lowest-cost 
-
-S3 Intelligent-Tiering
-===
-![S3 Intelligent-Tiering](../images/S3_INT.png)
-- a New Amazon S3 Storage Class designed for customers who want to optimize storage costs automatically when data access patterns change, without performance impact or operational overhead. S3 Intelligent-Tiering is the first cloud object storage class that delivers automatic cost savings by moving data between two access tiers --frequent access and infrequent access-- when access pattern change, and is ideal for data with unknown or changing access patterns.
-- S3 Intelligent-Tiering stores objects in two access tiers:
-    -  one tier that is optimized for frequent access and another lower-cost tier that is optimized for infrequent access.
-    - For a small monthly monitoring and automation fee per object, S3 Intelligent-Tiering monitors access patterns and moves objects that have not been accessed for 30 consecutive days to the infrequent access tier. There are no retrieval fees in S3 Intelligent-Tiering.
-    - If an object inthe infrequent access tier is accessed later, it is automatically moved back to the frequent access tier. No additional tiering fees apply when objects are moved between access tiers within the S3 Intelligent-Tiering storage class. S3 Intelligent-Tiering is designed for 99.9% availability and 99.999999999% durability, and offers the same low latency and high throughput performance of S3 Standard.
-- Amazon S3 features including S3 Object Tagging, S3 Cross-Region Replication, and S3 Select all work with S3 Intelligent-Tiering. Customers can start using S3 Intelligent-Tiering through the S3 API, CLI, and management console by putting objects directly into S3 Intelligent-Tiering or by using a S3 Lifecycle policy to move objects from S3 Standard or S3 Standard-IA to S3 Intelligent-Tiering. Customers can also archive obejcts with a S3 Lifecycle policy from S3 Intelligent-Tiering into Amazon S3 Glacier.
-- S3 Intelligent-Tiering charges a small tiering fee and has a minimum eligible object size of 128KB for auto-tiering. Smaller objests may be stored but will always be charged at the Frequent Access tier rates.
-
-## S3 Pre-Signed URLs
-![s3_presigned_url](../images/s3_presigned_url.png)
-- In Amazon S3, all objects are private by default. Only the object owner has permission to access these objects. 
-- However, the object owner can optionally share objects with others **by creating a pre-signed URL**, using their own security credentials, **to grant time-limited permission to download the objects**.
-- When you create a pre-signed URL for your object, you must provide your security credentials, specify a bucket name, an object key, specify the HTTP method (GET to download the object) and expiration date and time. The pre-signed URLs are valid only for the specified duration.
-- Anyone who receives the pre-signed URL can then access the object. For example, if you have a video in your bucket and both the bucket and the object are private, you can share the video with others by generating a pre-signed URL.
-
-## Avoiding accidental deletion in Amazon S3 bucket
-- Enable **Versioning**
-    - Versioning is a means of keeping multiple variants of an object in the same bucket.
-    - You can use versioning to preserve, retrieve, and restore every version of every object stored in Amazon S3 bucket.
-    - With versioning, you can easily recover from both unintended user actions and application failures.
-- Enable **MFA(Multi-Factor Authentication)** Delete
-    - If the MFA Delete is enabled, it requires additional authentication for either of the following operations:
-        - Change the versioning state of your bucket
-        - Permanently delete an object version
-
 ## Prerequisites for routing traffic to a website that is hosted in an Amazon S3
 ![s3_webhosting_with_route53](../images/s3_webhosting_with_route53.png)
 - An S3 bucket that is configured to host a static website. **The bucket must have the same name as your domain or subdomain**. For example, if you want to use the subdomain portal.dev.com, the name of the bucket must be portal.dev.com.
 - A registered domain name. You can use Route53 as your domain register, or you can use a different register.
-- Route53 as the DNS service for the domain. If you register your domain name by using Route 53, we automatically configure Route 53 as the DNS service for the domain.
+- Route53 as the DNS service for the domain. If you register your domain name by using Route 53, we automatically configure Route 53 as the DNS service for the domain.  
 ※ Route 53 MX record specifies the mail server responsible for accepting email messages on behalf of a domain name.  
 ※ You only need to enable Cross-Origin Resource Sharing (CORS) when your client web application on one domain interacts with the resources in a different domain.  
 
@@ -593,12 +556,12 @@ Network
 ![amazon_mq](../images/amazon_mq.png)
 - Amazon MQ, Amazon SQS, and Amazon SNS are messageing services that are suitable for anyone from startups to enterprises.
 - If you're using messaging with existing applications and want to move your messaging service to the cloud quickly and easily, it is recommended that you consider Amazon MQ. 
-    - It supports industry standard APIs and protocols so you can switch from any standards-based message broker to Amazon MQ without rewriting the messaging code in your applications.
+    - It supports **industry standard APIs and protocols** so you can **switch from any standards-based message broker to Amazon MQ without rewriting the messaging code** in your applications.
 - If you're building brand new applications in the cloud, then it is highly recommended that you consider Amazon SQS and Amazon SNS.
-    - Amazon SQS and SNS are lightweight, fully-managed message queue and topic services taht scale almost infinitely and provide simple, easy-to-use APIs. 
+    - Amazon SQS and SNS are lightweight, fully-managed message queue and topic services that scale almost infinitely and provide simple, easy-to-use APIs. 
         - Unlike Amazon MQ, Amazon SQS is a fully managed message queuing service, it doesn't support an extensive list of industry-standard messaging APIs and protocol. 
         - Moreover, using Amazon SQS requires you to do additional changes in the messaging code of applications to make it compatible.
-        - Amazon SNS is more suitable as a pub/sub messaging service instead of a messaging broker service.
+        - **Amazon SNS is more suitable as a pub/sub messaging service instead of a messaging broker service.**
     - You can use Amazon SQS and SNS to decouple and scale microservices, distributed systems, and serverless applications, and improve reliability.
 
 ## Amazon SWF
@@ -716,6 +679,7 @@ AWS CloudFormation
 ## Amazon WAF
 - Web Application Firewall (WAF)
 - helps protect your web applications from common web exploits.
+※ Do not get confused with SWF (Amazon Simple WorkFlow)
 
 ## Amazon Glue
 - fully managed **extract, transform, and load (ETL)** service that makes it easy for customers to prepare and load their data for analytics.

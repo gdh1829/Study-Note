@@ -58,6 +58,15 @@ Provisioned IOPS 변경: Storage 용량이 100GB 이상일 때만 사용 가능
 
 Apply Immediately: 설정 변경 내용을 즉시 적용할 수 있게 해준다. 단, 즉시 적용 설정을 하면 DB 인스턴스의 실행이 중지되므로 downtime 발생.이 설정은 사용하지 않을 시는 다음 Maintenance Window에 적용된다.
 
+## Enhanced monitoring metrics that Amazon CloudWatch provides for Amazon RDS DB instances
+- Amazon RDS provides metrics in real time for the OS that your DB instance runs on. 
+- You can view the metrics for your DB instance using the console, or consume the Enhanced Monitoring JSON output from CloudWatch Logs in a monitoring system of your choice.
+- CloudWatch gathers metrics about CPU utilization from the hypervisor for a DB instance, and Enhanced Monitoring gathers its metrics from an agent on the instance. As a result, you might find differences between the measurements, because the hypervisor layer performs a small amount of work. The differences can be greater if your DB instances use smaller instance classes, because then there are likely move virtual machines (VMs) that are managed by the hypervisor layer on a single physical instance. Enhanced Monitoring metrics are useful when you want to see how different processes or threads on a DB instance use the CPU.
+- In RDS, the Enhanced Monitoring metrics shown in the Process List view are organized as follows:
+    - __RDS child process__: Shows a summary of the RDS processes that support the DB instance, for example `aurora` for Amazon Aurora DB clusters and `mysqld` for MySQL DB instances. Process threads appear nested beneath the parent process. Process threads show CPU utilization only as other metrics are the same for all threads for the process. The console displays a maximum of 100 processes and threads. The results are a combination of the top CPU consuming and memory consuming processes and threads. If there are more than 50 consumers in each category, the console displays the top 50 consumers in each category. This display helps you identify which processes are having the greatest impact on performance.
+    - __RDS processes__: Shows a summary of the resources used by the RDS management agent, diagnositcs monitoring processes, and other AWS processes that are required to support RDS DB instances.
+    - __OS processes__: Shows a summary of the kernel and system processes, which generally have minimal impact on performance.
+
 ## 기타 기능
 * Paramter Groups: DB 세부 설정을 한 곳에 모아 놓은 것. 현재 사용 중인 Paramter group은 수정할 수 없으며 Paramter group을 새로 생성한 뒤 DB 인스턴스에서 교체하는 방식을 취한다.
 * Option Groups: DB 실행 옵션을 한 곳에 모아 놓은 것. 현재 사용 중인 Option group은 수정 불가. Paramter group과 마찬가지로 Option group을 새로 생성한 뒤 DB 인스턴스에서 교체하는 방식.

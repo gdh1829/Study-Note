@@ -1,5 +1,7 @@
 EC2
 ===
+## Lifecycle
+![ec2_lifecycle](./images/ec2_lifecycle.png)
 
 ## Elastic IPs
 EC 인스턴스를 생성 시 __Auto-assign Public IP__ 설정을 할 수 있어, Public IP를 지정받을 수 있다.  

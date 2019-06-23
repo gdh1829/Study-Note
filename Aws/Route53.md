@@ -28,6 +28,16 @@ Route53는 일반적인 DNS 서버들과 달리 아래와 같은 기능들도 �
     * 특히, 미국에서는 state별로 다른 IP를 알려주도록 설정도 가능
     * Route53는 CloudFront 또는 S3와 연동할 때 Zone Apex(ex. www.example.com 대신 example.com)를 지원. 일반적인 DNS에서는 CNAME(별칭 레코드)으로 연결할 때 Root Domain(ex. example.com)은 사용 불가
 
+## Failover
+- You can use Route53 health checking to configure active-active and active-passive failover configurations. You configure active-active failover using any routing policy (or combination of routing policies) other than failover, and you configure active-passive failover using the failover routing policy.
+### Active-Active Failover
+- Use this failover configuration when you want all of your resources to be available the majority of the time. When a resource becomes unavailable, Route53 can detect that it's unhealthy and stop including it when responding to queries.
+- In active-active failover, all the records that have the same name, the same type (such as A or AAAA), and the same routing policy (such as weighted or latency) are active unless Route53 considers them unhealthy. Route53 can respond to a DNS query using any healthy record.
+### Active-Passive Failover
+- User an active-passive failover configuration when you want a primary resource or group of resources to be available the majority of the time and you want a secondary resource or group of resources to be on standby in case all the primary resources.
+- When responding to queries, Route53 includes only the healthy primary resources. If all the primary resources are unhealthy, Route53 begins to include only the healthy secondary resources in response to DNS queries.
+
+
 ## How to connect Route53 to ELB
 https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html  
 

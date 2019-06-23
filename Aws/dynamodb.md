@@ -40,6 +40,7 @@ Dynamo DB
     - You can use **DynamoDB Streams together with AWS Lambda to create a _trigger_**, which is a code that executes automatically whenever an event of interest appears in a stream.
     - DynamoDB Streams enables powerful solutions such as **data replication within and across Regions**, **materialized views of data in DynamoDB tables**, **data analysis using Kinesis materialized views**, and much more.
 ![dynamodb_streams](./images/dynamodb_streams.png)
+![dynamodb_stream_with_triggers](./images/dynamodb_stream_with_trigger.png)
 
 ## Data Types for Attributes
 - __Scalar Types__
