@@ -2,17 +2,18 @@
 date=$(date +%F)
 retry=true
 
-while LOOP_FLAG; do
+echo "$date Memcache Recovery Process starts..."
+while $retry; do
 
-    service tomcat7 restart
+    sudo service tomcat7 restart
+    sudo kill $(ps axo pid,cmd|grep jmx|grep -v grep|sed -e 's/^ *//'|cut -d" " -f1) && sudo service jmx-exporter start
 
     # tomcat
-    echo "checking catalina.out ..."
+    echo "checking catalina.$date.log ..."
     while true; do
-        line=$(tail -n1 /instancelocal/logs/tomcat/catalina.$date.out)
-        if [ -n "$(echo $line | grep -i 'Server startup in')" ]; then
-            echo "tomcat log : Checked"
-            echo $line
+        line=$(tail -n1 /instancelocal/log/tomcat/catalina.$date.log)
+        if [ -n "$(echo $line | grep -i 'Queue started')" ]; then
+            echo "[SUCCESS] catalina.$date.log : OK -> $line"
             break
         fi
     done
@@ -20,10 +21,9 @@ while LOOP_FLAG; do
     # jmxexport
     echo "checking jmxexport.log..."
     while true; do
-        line=$(tail -n1 /instancelocal/logs/tomcat/jmxexport.log)
-        if [ -n "$(echo $line | grep -i 'Server startup in')" ]; then
-            echo "jmxexport log: Checked"
-            echo $line
+        line=$(tail -n1 /instancelocal/log/tomcat/jmxexport.log)
+        if [ -n "$(echo $line | grep -i 'Publisher porters.jmxexport.aws.CloudwatchPublisher loaded')" ]; then
+            echo "[SUCCESS] jmxexport.log: OK -> $line"
             break
         fi
     done
@@ -31,17 +31,15 @@ while LOOP_FLAG; do
     # memcache connection check
     echo "Checking Memcache connection..."
     while true; do
-        line=$(tail -n1 /instancelocal/logs/tomcat/catalina.$date.out)
+        line=$(tail -n1 /instancelocal/log/tomcat/catalina.$date.log)
         if [ -n "$(echo $line | grep -i 'connection is stable')" ]; then
-            echo "memcache connection: chekced"
-            echo $line
+            echo "[SUCCESS] memcache connection check: OK -> $line"
             retry=false
             break
         fi
-        if [ -n "$(echo $line | grep -i 'connection is unstable')" o -n "$(echo $line | grep -i 'exception')"]; then
-            echo "memcache connection: unstable"
-            echo $line
-            echo "Restarts tomcat..."
+        if [ -n "$(echo $line | grep -i 'connection is unstable')" ]; then
+            echo "[WARNING] memcache connection: unstable!!! -> $line"
+            echo "[WARNING] Retry Restarting tomcat...!"
             break
         fi
     done
