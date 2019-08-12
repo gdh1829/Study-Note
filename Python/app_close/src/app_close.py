@@ -36,19 +36,19 @@ args = parser.parse_args()
 
 # Query space
 SELECT_APP_QUERY = '''SELECT id, app_name, company_id, app_key, app_secret 
-                    FROM application 
+                    FROM oauth_application 
                     WHERE id = %s'''
 SELECT_USER_QUERY = '''SELECT u.id, a.id as user_authenticated_id, u.company_id, u.company_user_id 
-                    FROM user u
-                    LEFT OUTER JOIN user_authenticated a on u.id = a.user_id 
+                    FROM oauth_user u
+                    LEFT OUTER JOIN oauth_user_authorized a on u.id = a.user_id 
                     WHERE u.app_id = %s 
                     ORDER BY u.company_id ASC'''
-UPDATE_APP_QUERY = '''UPDATE application 
+UPDATE_APP_QUERY = '''UPDATE oauth_application 
                     SET app_secret = concat(app_secret, "_stopped") 
                     WHERE id = %s AND app_name = %s'''
-DELETE_AUTHORIZED_USER_QUERY = '''DELETE FROM user_authenticated 
+DELETE_AUTHORIZED_USER_QUERY = '''DELETE FROM oauth_user_authorized 
                                 WHERE id = %s AND user_id = %s AND app_id = %s'''
-DELETE_USER_QUERY = '''DELETE FROM user
+DELETE_USER_QUERY = '''DELETE FROM oauth_user
                     WHERE id = %s AND company_id = %s AND company_user_id = %s'''
 SELECT_DB_INFO_QUERY = '''SELECT partition_id, db_id 
                         FROM db_info 
@@ -81,7 +81,7 @@ def printApp(appId, appName, companyId):
 def printAppUsers(Users):
     print('''   ==========< USERS CONNECTED TO APP >========''')
     if users == None or len(users) == 0:
-        print('No User Data connected to the app')
+        print('No oauth_user Data connected to the app')
 
     for user in Users:
         print('''   COMPANY_ID: %s, COMPANY_USER_ID: %s, OAUTH_USER_ID: %s, OAUTH_AUTHORIZED_USER_ID: %s '''
@@ -140,18 +140,18 @@ if isYes() == False:
     exit(0)
 
 # Process starts
-print('Updating application data...')
+print('Updating oauth_application data...')
 execute(cur, UPDATE_APP_QUERY, (app['id'], app['app_name'], ))
 print('OK')
 
-print('Deleteing user authentication data...')
+print('Deleteing oauth_user_authorized data...')
 for user in users:
     if user['user_authenticated_id'] == None:
         continue
     execute(cur, DELETE_AUTHORIZED_USER_QUERY, (user['user_authenticated_id'], user['id'], app['id'], ))
 print('OK')
 
-print('Deleteing user data...')
+print('Deleteing oauth_user data...')
 for user in users:
     execute(cur, DELETE_USER_QUERY, (user['id'], user['company_id'], user['company_user_id'], ))
 print('OK')
