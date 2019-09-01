@@ -1,0 +1,2 @@
+136.243.14.137 - - [14/Feb/2015:01:56:03 -0800] "GET /robots.txt HTTP/1.0" 200 252 "-" "Mozilla/5.0 (compatible; MJ12bot/v1.4.5; http://www.majestic12.co.uk/bot.php?+)" 
+136.243.14.137 - - [14/Feb/2015:01:56:10 -0800] "GET /honeypot//%22http://amunhoney.sourceforge.net//%22 HTTP/1.0" 404 284 "-" "Mozilla/5.0 (compatible; MJ12bot/v1.4.5; http://www.majestic12.co.uk/bot.php?+)"
