@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # native modules
 import argparse
 import datetime
@@ -10,108 +12,86 @@ import glob
 # import numpy as np
 import pandas as pd
 
-parser = argparse.ArgumentParser(description = 'aggregation of server performance')
-parser.add_argument('--file', '-f', help = 'log file path and also multiple files is possible with delimeter comma(,) ex)access_hrbc-jp.porterscloud.com.log-20190904', type = str, required=True)
+parser = argparse.ArgumentParser(description = "aggregation of server performance")
+parser.add_argument("--file", "-f", help = "file path", type = str, required=True)
 args = parser.parse_args()
 
-def parseApacheLog(filePath):
-    fieldsNames = ['company', 'user', 'timestamp', 'db', 'method', 'path', 'referer', 'dummy1', 'processing_time', 'dummy2', 'dummy3', 'version', 'ip']
-    rawData = pd.read_csv(filePath, header=None, names=fieldsNames, na_values=['-'], encoding='utf-8')
-    framedData = rawData.drop(['user', 'db', 'dummy1', 'dummy2', 'dummy3', 'version', 'ip'], axis=1)
-    return framedData.dropna(axis=1, how='all')
-    # return framedData.dropna(axis=1, thresh=5)
-
-def extractEndpoint(fullPath):
-    if type(fullPath) != str:
-        return "None"
-    return fullPath.split('?')[0]
+def parseApache(filePath):
+    fieldsNames = ["company", "user", "timestamp", "db", "method", "path", "referer", "dummy1", "processing_time", "dummy2", "dummy3", "version", "ip"]
+    rawData = pd.read_csv(filePath, sep=",", header=None, names=fieldsNames, na_values=["-"], encoding="utf-8", engine="python")
+    framedData = rawData.drop(["user", "db", "dummy1", "dummy2", "dummy3", "version", "ip"], axis=1)
+    framedData["referer"].astype(str)
+    framedData["processing_time"].astype(float)
+    framedData["timestamp"] = pd.to_datetime(framedData["timestamp"], format="%Y-%m-%d %H:%M:%S")
+    return framedData.dropna(axis=1, how="all")
 
 def isDetailView(path):
     if type(path) != str:
         return False
-    p = re.compile(r'(^https\:\/\/hrbc-jp.porterscloud.com\/.+\/search)')
+    p = re.compile(r"(^https\:\/\/hrbc-jp.porterscloud.com\/.+\/search)")
     result = p.search(path)
     return result is not None
 
 def isMailSearch(path):
-    if path == '/privateapi/mail/search-mails':
+    if path == "/privateapi/mail/search-mails":
         return True
     return False
 
-def returnRootPath(path):
-    return path.split('?')[0]
+def getPurePath(path):
+    if type(path) != str:
+        return "None"
+    return path.split("?")[0]
 
 def convertMicro2Sec(millis):
     sec = millis/1000000
     return sec
 
+def execScriptMode():
+    apacheDf = parseApache(args.file)
+    privateDf = apacheDf.loc[apacheDf["path"].str.startswith("/privateapi/")]
+    print(privateDf)
 
-concatenatedDf = parseApacheLog(args.file)
-privateDf = concatenatedDf.loc[concatenatedDf['path'].str.startswith('/privateapi/')]
-print(privateDf)
+    # filter
+    # filteredDf = privateDf.filter(["path", "referer", "processing_time"])
+    # filteredDf["path"] = filteredDf["path"].apply(lambda s : getPurePath(s))
+    # filteredDf["referer"] = filteredDf["referer"].apply(lambda s : getPurePath(s))
+    # filteredDf["processing_time"] = filteredDf["processing_time"].apply(lambda s : convertMicro2Sec(s))
 
+    # ## referer - mail
+    # searchMailsDf = filteredDf.loc[filteredDf["path"].str.startswith("/privateapi/mail/search-mails")]
+    # print(searchMailsDf)
+    # refererMailDf = searchMailsDf.loc[filteredDf["referer"].str.startswith("https://hrbc-jp.porterscloud.com/mail")]
+    # print(refererMailDf)
 
-## sampling data
-# samplingData = pd.DataFrame(data={'time': concatenatedDf['time'], 'path': concatenatedDf['path'], 'processing_time': concatenatedDf['processing_time'], 'referer': concatenatedDf['referer']})
-# samplingData['path'] = samplingData['path'].apply(lambda s : returnRootPath(s))
-# samplingData['referer'] = samplingData['referer'].apply(lambda s : extractEndpoint(s))
-# samplingData['processing_time'] = samplingData['processing_time'].apply(lambda s : convertMicro2Sec(s))
+    # per second request数
+    # samplingData2 = pd.DataFrame(data={"timestamp": apacheDf["time"], "path": apacheDf["path"]})
+    # result2 = samplingData2.groupby(["timestamp"])["path"].count().reset_index(name="count")
+    # print(result2.sort_values("count", ascending=False).head(10))
+    # print(result.head(10))
 
-## filter
-filteredDf = privateDf.filter(['path', 'referer', 'processing_time'])
-# filteredDf.dropna(axis=1, how='any')
-filteredDf['path'] = filteredDf['path'].apply(lambda s : returnRootPath(s))
-filteredDf['referer'] = filteredDf['referer'].apply(lambda s : extractEndpoint(s))
-filteredDf['processing_time'] = filteredDf['processing_time'].apply(lambda s : convertMicro2Sec(s))
+    # with pd.option_context("display.max_rows", None, "display.max_columns", None, "display.width", None):
+    #     print(result["referer"].unique())
+    #     print(apacheDf.tail(20))
+    #     result3 = samplingData.loc[samplingData["processing_time"] > 2]
+    #     print(result3.groupby("path")["path"].count().reset_index(name="count"))
+    #     result3 = samplingData.loc[samplingData["processing_time"] > 3]
+    #     print(result3.groupby("path")["path"].count().reset_index(name="count"))
+    #     result3 = samplingData.loc[samplingData["processing_time"] > 5]
+    #     print(result3.groupby("path")["path"].count().reset_index(name="count"))
+    #     result3 = samplingData.loc[samplingData["processing_time"] > 10]
+    #     print(result3.groupby("path")["path"].count().reset_index(name="count"))
+    #     result3 = samplingData.loc[samplingData["processing_time"] > 25]
+    #     print(result3.groupby("path")["path"].count().reset_index(name="count"))
+    #     result3 = samplingData.loc[samplingData["processing_time"] > 50]
+    #     print(result3.groupby("path")["path"].count().reset_index(name="count"))
+    #     result3 = samplingData.loc[samplingData["processing_time"] > 60]
+    #     print(result3.groupby("path")["path"].count().reset_index(name="count"))
+    #     result3 = samplingData.loc[samplingData["processing_time"] > 75]
+    #     print(result3.groupby("path")["path"].count().reset_index(name="count"))
+    #     result3 = samplingData.loc[samplingData["processing_time"] > 100]
+    #     print(result3.groupby("path")["path"].count().reset_index(name="count"))
 
-## referer - mail
-searchMailsDf = filteredDf.loc[filteredDf['path'].str.startswith('/privateapi/mail/search-mails')]
-print(searchMailsDf)
-refererMailDf = searchMailsDf.loc[filteredDf['referer'].str.startswith('https://hrbc-jp.porterscloud.com/mail')]
-print(refererMailDf)
-
-# print(filteredDf[filteredDf['path'].str.contains(r'^\/privateapi\/mail\/search-mails')])
-# refererMailDf = filteredDf[filteredDf['referer'].str.contains(r'^https\:\/\/hrbc-jp.porterscloud.com\/mail')]
-# print(refererMailDf[refererMailDf['path'].str.contains(r'^\/privateapi\/mail\/search-mails')])
-
-# result = samplingData.loc[samplingData['path'] == '/privateapi/mail/search-mails']
-# result = result.groupby('referer')['processing_time'].describe()
-# print(result.sort_values('count', ascending=False))
-# print(result.count())
-
-# print(samplingData.groupby('path')['processing_time'].quantile(.98))
-# print(samplingData.groupby('path')['processing_time'].quantile(.996))
-# print(samplingData.groupby('path')['processing_time'].quantile(.997))
-# print(samplingData.groupby('path')['processing_time'].quantile(.998))
-# print(samplingData.groupby('path')['processing_time'].quantile(.999))
-# print(samplingData.groupby('path')['processing_time'].quantile(.9995))
-
-# per second request数
-# samplingData2 = pd.DataFrame(data={'timestamp': concatenatedDf['time'], 'path': concatenatedDf['path']})
-# result2 = samplingData2.groupby(['timestamp'])['path'].count().reset_index(name="count")
-# print(result2.sort_values('count', ascending=False).head(10))
-# print(result.head(10))
-
-# with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.width', None):
-#     print(result['referer'].unique())
-#     print(concatenatedDf.tail(20))
-#     result3 = samplingData.loc[samplingData['processing_time'] > 2]
-#     print(result3.groupby('path')['path'].count().reset_index(name="count"))
-#     result3 = samplingData.loc[samplingData['processing_time'] > 3]
-#     print(result3.groupby('path')['path'].count().reset_index(name="count"))
-#     result3 = samplingData.loc[samplingData['processing_time'] > 5]
-#     print(result3.groupby('path')['path'].count().reset_index(name="count"))
-#     result3 = samplingData.loc[samplingData['processing_time'] > 10]
-#     print(result3.groupby('path')['path'].count().reset_index(name="count"))
-#     result3 = samplingData.loc[samplingData['processing_time'] > 25]
-#     print(result3.groupby('path')['path'].count().reset_index(name="count"))
-#     result3 = samplingData.loc[samplingData['processing_time'] > 50]
-#     print(result3.groupby('path')['path'].count().reset_index(name="count"))
-#     result3 = samplingData.loc[samplingData['processing_time'] > 60]
-#     print(result3.groupby('path')['path'].count().reset_index(name="count"))
-#     result3 = samplingData.loc[samplingData['processing_time'] > 75]
-#     print(result3.groupby('path')['path'].count().reset_index(name="count"))
-#     result3 = samplingData.loc[samplingData['processing_time'] > 100]
-#     print(result3.groupby('path')['path'].count().reset_index(name="count"))
-
-
+if __name__ == "__main__":
+    execScriptMode()
+else:
+    print("It\'s not supported, other than script mode")
