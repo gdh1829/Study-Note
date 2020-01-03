@@ -55,8 +55,8 @@ rectangle proxy {
 a --> fp
 b --> fp
 c --> fp
-d --> fp
-fw --> internet
+d --> fp: Large number of clients \nwith long-term keepalive conntections
+fw --> internet: Reduces connections \nto the minimum number \nnecessary
 internet --> server
 
 ```
@@ -89,7 +89,7 @@ client --> internet
 internet --> fw
 rp --> s1
 rp --> s2
-rp --> s3
+rp --> s3: load balancing
 
 ```
 
