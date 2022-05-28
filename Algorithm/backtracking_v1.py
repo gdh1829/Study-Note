@@ -20,7 +20,8 @@
 3. 자료구조
 - 선택값 저장 int[]
 """
-
+# @@@@@@@@@@@@@@ WRONG ANWER @@@@@@@@@@@@@@
+# See v2.py
 import sys
 input = sys.stdin.readline
 
