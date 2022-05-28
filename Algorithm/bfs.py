@@ -21,32 +21,40 @@ from collections import deque
 import sys
 input = sys.stdin.readline
 
+# 맵 사이즈 입력 받기(세로크기, 가로크기)
 n,m = map(int, input().split())
+# 맵 만들기
 map = [list(map(int, input().split())) for _ in range(n)]
+# 맵 방문 기록
 chk = [[False] * m for _ in range(n)]
 
-# 오른쪽, 위쪽, 왼쪽, 아래쪽 
+# 4방향 진행경로 
 dy = [0,1,0,-1]
 dx = [1,0,-1,0]
 
+# 너비 탐색
 def bfs(y, x):
-    rs = 1
-    q = deque()
-    q.append((y, x))
-    while q:
-        ey, ex = q.popleft()
+    size = 1
+    # deque 컬렉션을 사용하여 속도 이점 챙기기. 맨앞뒤의 빈번한 in/out이 있을 경우, 서치 O(1)로 (리스트보다) 가장 빠름.
+    dq = deque()
+    # Queue 자료구조에 현재 좌표 등록.
+    dq.append((y, x))
+    while dq:
+        # 큐의 선입된 좌표를 꺼내 4방향 진출 전략 실시.
+        ey, ex = dq.popleft()
         for k in range(4):
             ny = ey + dy[k]
             nx = ex + dx[k]
             
-            # 지도 사이즈를 넘어가지 않는지 확인
+            # 지도 사이즈를 넘어가지 않는지 확인.
             if 0 <= ny < n and 0 <= nx < m:
-                # 지도가 1이고 방문하지 않은 경우
+                # 지도가 1이고 방문하지 않은 경우.
                 if map[ny][nx] == 1 and chk[ny][nx] == False:
-                    rs += 1
+                    size += 1
                     chk[ny][nx] = True
-                    q.append((ny,nx))
-    return rs
+                    # 다음 너비 탐색 진출 예정지 Queue 등록
+                    dq.append((ny,nx))
+    return size
 
 cnt = 0
 maxv = 0
