@@ -39,4 +39,19 @@ class Solution {
         }
         return result
     }
+
+    /**
+     * time complexity O(n)
+     * 솔루션b 대비 코틀린 함수를 이용하여 더욱 간결하게.
+     */
+    fun twoSum_solution_c(nums: IntArray, target: Int): IntArray {
+        val diffMap = mutableMapOf<Int, Int>()
+
+        nums.forEachIndexed { index, num ->
+            diffMap[num]?.run { return intArrayOf(diffMap[num], index) }
+            diffMap[target - num] = index
+        }
+
+        return intArrayOf()
+    }
 }
