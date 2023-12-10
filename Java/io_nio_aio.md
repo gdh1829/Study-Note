@@ -1,22 +1,22 @@
-Java IO, NIO, AIO
+Java IO, NIO, AIO(NIO2)
 ---
 
-함수 호출 모델
+## 함수 호출 모델
 Blocking 동기 Java IO / 비동기 X
 Non-Blocking 동기 Java NIO(File IO는 non-blocking 불가), 비동기 Java AIO
 
-I/O 모델
+## I/O 모델
 Blocking 동기 Java IO / 비동기 X
 Non-blocking 동기 Java NIO, Java AIO / 비동기 x
 
-Java IO
+### Java IO
 - Java 1.0부터 도입
 - 파일과 네트워크에 데이터를 read/write API 제공
 - byte 단위로 read/write 할 수 있는 Input/OutputStream
   - FileIn/OutputStream, Buffered, ByteArray, Socket, etc의 In/OuputStream 구현체가 있음
 - blocking 동작
 
-SocketInputStream
+#### SocketInputStream
 server Socket accept
     - 소켓을 열고 특정 주소:포트와 바인드 후 리슨 상태에서 수신 대기 중
 server socker read
@@ -45,7 +45,7 @@ clientSocket.close();
 serverSocket.close();
 ```
 
-OutputStream implements Closable, Flushable
+#### OutputStream implements Closable, Flushable
 - write시 바로 전송하지 않고 버퍼에 저장한 다음 일정량의 데이터가 모이면 한번에 전달.
 - write: stream으로 데이터를 쓴다.
 - flush: 버퍼의 모든 데이터를 출력하고 비운다.
@@ -69,14 +69,14 @@ clientSocket.close();
 serverSocket.close();
 ```
 
-Java IO Reader/Writer
+#### Java IO Reader/Writer
 - since java 1.1
 - 기존 stream은 byte 단위로만 읽고 쓰기가 가능했음. 그러나 실사용에서는 문자 단위가 필요하여 탄생.
 - character 단위로 read/write 가능한 stream
 - 문자 인코딩 지원
 - blocking 동작
 
-Java IO의 한계
+#### Java IO의 한계
 - 커널 버퍼에 직접 접근 불가. 따라서 메모리 copy가 발생.
   - 이 말의 의미는?
   - 하드웨어에서 값을 읽어오면, disk controller가 DMA(Direct Memory Access)를 통해서 커널 버퍼에 값을 복사한다.
@@ -87,8 +87,8 @@ Java IO의 한계
   - application이 read를 호출하면, 커널이 응답을 돌려줄때까지 아무것도 할 수 없는 상태가 된다.
   - I/O 요청이 발생할 때마다 쓰레드를 새로 할당하면, 쓰레드를 생성 및 관리하는 비용과 컨텍스트 스위칭으로 인한 cpu 자원 소모가 발생한다.
   
+### Java NIO
 위의 문제점들을 해결하기 위해 Java NIO가 탄생
-Java NIO
 - Java New Input/Ouput
   - NIO의 N은 Non-blocking의 의미가 아니라 New ㅋㅋ 
 - since java 1.4
@@ -98,14 +98,14 @@ Java NIO
   - blocking도 지원하고, 일부 non-blocking이 불가능한 API도 잔여함.
 - selector, channel 도입으로 높은 성능 보장.
   
-Java NIO vs IO
+#### Java NIO vs IO
 데이터 흐름: 양방향 vs 단방향 => 의미? 기존 IO에서는 Input/Output 스트림으로 인풋/아웃풋 경로가 따로 존재하였으나 NIO는 Channel 하나를 통하여 in/out 모두 가능하다는 의미
 종류: Channel vs In/OutputStream
 데이터 단위: buffer vs byte or char
 블락킹 여부: 논블락킹 지원 vs 블락킹만 지원
 특이사항: Selector 지원 vs x
 
-Channel과 Buffer (ex. File <-> Channel <-> Buffer)
+##### Channel과 Buffer (ex. File <-> Channel <-> Buffer)
 - 데이터 read: 적절한 크기의 Buffer를 생성하고 Channel의 read() 메서드를 사용하여 데이터를 Buffer에 저장.
 - 데이터 write: 데이터를 Buffer에 저장하고 Channel의 write() 메서드를 사용하여 목적지로 전달
 - 초기화: clear() 메서드로 초기화하여 다시 사용 가능.
@@ -166,8 +166,8 @@ try (var fileChannel = FileChannel.open(file.toPath())) {
 }
 ```
 
-Java NIO는 어떻게 커널 버퍼에 직접 접근할까?
-Buffer의 종류
+##### Java NIO는 어떻게 커널 버퍼에 직접 접근할까?
+###### Buffer의 종류
 - DirectByteBuffer
   - native 메모리(off-heap)에 저장
   - 커널 메모리에서 복사를 하지 않으므로 데이터를 읽고 쓰는 속도가 빠름
@@ -175,5 +175,313 @@ Buffer의 종류
 - HeapByteBuffer
   - JVM heap 메모리에 저장. byte array 랩핑.
   - 커널 메모리에서 복사가 일어나므로 데이터를 읽고 쓰는 속도가 느림
-  - 이 과정에서 임시로 Direct Buffer를 만들기 떄문에 성능 저하
+  - 이 과정에서 내부적으로 임시로 Direct Buffer를 만들기 떄문에 성능 저하
   - gc에서 관리가 되므로 allocate,deallocate가 빠름
+- 구분
+```java
+// DirectByteBuffer
+var directByteBuffer = ByteBuffer.allocateDirect(1024);
+assert directByteBuffer.isDirect();
+
+// HeapByteBuffer
+var heapByteBuffer = ByteBuffer.allocate(1024);
+assert !heapByteBuffer.isDirect();
+
+// HeapByteBuffer
+var byteBufferByWrap = ByteBuffer.wrap("hello".getBytes());
+assert !byteBufferByWrap.isDirect();
+```
+
+###### FileChannel - read
+```java
+var file = new File(FileChannelReadExample.class
+    .getClassLoader()
+    .getResource("hello.txt")
+    .getFile());
+
+try (var fileChannel = FileChannel.open(file.toPath())) {
+    var byteBuffer = ByteBuffer.allocateDirect(1024);
+    fileChannel.read(byteBuffer);
+    byteBuffer.flip();
+
+    var result = StandardCharsets.UTF_8.decode(byteBuffer);
+    log.info("result: {]", result); // Hello world
+}
+```
+
+###### FileChannel - write
+```java
+var file = new File(FileChannelReadExample.class
+    .getClassLoader()
+    .getResource("hello.txt")
+    .getFile());
+
+// write는 별도로 모드 인자를 제공해야함.
+var mode = StandardOpenOption.WRITE;
+try (var fileChannel = FileChannel.open(file.toPath(), mode)) {
+    var byteBuffer = ByteBuffer.wrap("hellow world2".getBytes());
+    var result = fileChannel.write(byteBuffer);
+    log.info("result: {]", result); // hello world2
+}
+```
+
+###### Client SocketChannel - read,write
+```java
+try (var socketChannel = SocketChannel.open()) {
+    var addr = new InetSocketAddress("localhost", 8080);
+    // 서버의 localhost:8080 소켓 연결
+    var connected = socketChannel.connect(addr);
+    log.info("connected: {}", connected); // connected: true
+
+    String request = "This is client.";
+    // 힙 바이트 버퍼
+    ByteBuffer requestBuffer = ByteBuffer.wrap(request.getBytes());
+    // 소켓 전송
+    socketChannel.write(requestBuffer);
+    // 전송한 버퍼 클리어
+    requestBuffer.clear();
+
+    // 서버 응답 읽기용 다이렉트 바이트 버퍼
+    ByteBuffer res = ByteBuffer.allocateDirect(1024);
+    // 응답 읽기 준비
+    while (socketChannel.read(res) > 0) {
+        // 읽기용 (버퍼 포지션과 리밋 조정)
+        res.flip();
+        // 서버 응답 메시지 출력
+        log.info("res: {}", StandardCharsets.UTF_8.decode(res)); // res: This is server.
+        res.clear();
+    }
+}
+```
+
+###### ServerSocketChannel - read,write
+```java
+try (var serverChannel = ServerSocketChannel.open()) {
+    var addr = new InetSocketAddress("localhost", 8080);
+    serverChannel.bind(addr);
+
+    // 클라이언트와 연결될때까지 블록킹
+    try (var clientSocker = serverChannel.accept()) {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
+        clientSocket.read(buffer);
+        buffer.flip();
+
+        var request = new String(buffer.array().trim());
+        log.info("request: {}", request); // request: This is client.
+
+        var response = "This is server.";
+        var responseBuffer = ByteBuffer.wrap(response.getBytes());
+        clientSocket.write(responseBuffer);
+        responseBuffer.flip();
+    }
+}
+```
+
+##### Java NIO를 논블록킹하게 쓰러면?
+- SelectableChannel 인터페이스를 먼저 알아야함.
+- 상속관계: SocketChannel, ServerSocketChannel -> AbstractSelectableChannel -> SelectableChannel
+- SelectableChannel
+```java
+public abstract class SelectableChannel 
+    extends AbstractInterruptibleChannel 
+    implements Channel 
+{
+
+    // serverSocketChannel.accept, socketChannel.connect 등이 논블록킹으로 동작.
+    public abstract SelectableChannel configureBlocking(boolean block) throws IOException;
+
+    public final SelectionKey register(Selector sel, int ops) throws ClosedChannelException { ... }
+}
+```
+###### 위의 configureBlocking의 적용예시
+
+###### ServerSocketChannel - 논블록킹 accept
+```java
+try (var serverChannel = ServerSocketChannel.open()) {
+    var addr = new InetSocketAddress("localhost", 8080);
+    serverChannel.bind(addr);
+    // 논블록킹으로 설정(디폴트 true. 블록킹 way)
+    serverChannel.configureBlocking(false);
+
+    // 논블록킹으로 동작. 바로 다음 라인으로 넘어간다.
+    var clientSocket = serverChannel.accept();
+    // 논블록킹으로 동작하였으므로 아직 클라이언트와 연결되지 않아 바로 null이 내려옴
+    assert clientSocket == null;
+}
+```
+
+###### ServerSocketChannel - 논블록킹 accept
+```java
+try (var socketChannel = SocketChannel.open()) {
+    var addr = new InetSocketAddress("localhost", 8080);
+    // 논블록킹 설정
+    socketChannel.configureBlocking(false);
+
+    // 논블록킹 동작. 바로 다음 라인으로 넘어간다.
+    var connected = socketChannel.connect(addr);
+    assert !connected; // 논블록킹 동작하였으므로 즉시 false;
+}
+```
+
+###### FileChannel
+```java
+public abstract class FileChannel 
+    extends AbstractInterruptibleChannel 
+    implements SeekableByteChannel, GatheringByteChannel, ScatteringByteChannel
+{ ... }
+```
+- SelectableChannel을 구현하고 있지 않아 모든 FILE I/O는 블록킹 동작.
+- 때문에 FileChannel.open(...) 후 fileChannel.configureBlocking(false);라는 함수는 존재하지 않음.
+- 즉 자바 NIO에서 모든 I/O는 논블록킹으로 동작할수는 없음.
+
+### Java AIO(NIO2)
+
+- since Java 1.7
+- AsynchronousChannel 지원
+  - AsynchronousSocketChannel -> AsynchronousByteChannel -> AsynchronousChannel
+  - AsynchronousServerSocketChannel -> AsynchronousChannel
+  - AsynchronousFileChannel -> AsynchronousChannel
+- callback과 future 지원.
+  
+![screenshot](./Images/java_aio.png) 
+- Thread pool과 epoll, kqueue 등의 이벤트 알림 system call을 이용
+- I/O가 준비되었을때, Future 또는 callback으로 비동기적인 로직 처리.
+
+#### AsynchronousFileChannel - callback 방식
+```java
+var file = new File(
+    AsyncFileChannelReadCallbackExample.class
+        .getClassLoader()
+        .getResource("hello.txt")
+        .getFile()
+);
+
+var channel = AsynchronousFileChannel.open(file.toPath());
+ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
+
+/**
+ * 첫번째 인자: ByteBuffer
+ * 두번째: 버퍼의 읽기 시작 포지션
+ * 세번째: Object attachment 전달 인자
+ * 네번째: 콜백 함수
+ */ 
+channel.read(buffer, 0, null, new CompletionHandler<>() {
+    @SneakyThrows
+    @Override
+    public void completed(Integer result, Object attachment) {
+        buffer.flip();
+        var resultString = StandardCharsets.UTF_8.decode(buffer);
+        log.info("result: {}", resultString);
+        channel.close();
+    }
+
+    @Override
+    public void failed(Throwable ex, Object attachment) { ... }
+});
+
+// 채널 대기동안 로그 출력.
+while (channel.isOpen()) {
+    log.info("Reading...");
+}
+```
+
+#### AsynchronousFileChannel - future 방식
+```java
+var file = new File(
+    AsyncFileChannelReadCallbackExample.class
+        .getClassLoader()
+        .getResource("hello.txt")
+        .getFile()
+);
+
+try(var channel = AsynchronousFileChannel.open(file.toPath())) {
+    var buffer = ByteBuffer.allocateDirect(1024);
+    // Future 방식으로 별도 콜백 함수를 인자 전달 X
+    Future<Integer> channelRead = channel.read(buffer, 0);
+
+    // 읽기 대기.
+    // 콜백방식보다는 간결하지만 while문을 통한 지속적 체크를 통한 리소스 낭비가 있음.
+    while (!channelRead.isDone()) {
+        log.info("Reading...");
+    }
+
+    buffer.flip();
+    var result = StandardCharsets.UTF_8.decode(buffer);
+    log.ingo("result: {}", result);
+}
+```
+
+#### AsynchronousServerSocketChannel - callback 방식
+```java
+/**
+ * 첫번째 인자: Object attachement
+ * 두번째: 컴플리션 핸들러 콜백
+ */ 
+// 기존 Java I/O의 serverSocketChannel이 바로 ClientChannel을 반환하던 것과 달리 콜백 completed 함수에서 clientChannel 사용.
+serverSocketChannel.accept(null, new CompletionHandler<>() {
+    @Override
+    public void completed(AsynchronousSocketChannel clientChannel, Object attachment) {
+        var requestBuffer = ByteBuffer.allocateDirect(1024);
+
+        clientSocket.read(requestBuffer, null, new CompletionHandler<>() {
+            @SneakyThrows
+            @Override
+            public void completed(Integer a, Object attachment) {
+                requestBuffer.flip();
+                var request = StandardCharsets.UTF_8.decode(requestBuffer);
+                log.info("request: {}", request);
+
+                var response = "This is server.";
+                var responseBuffer = ByteBuffer.wrap(response.getBytes());
+                clientSocket.write(responseBuffer);
+                clientSocket.close();
+                log.info("end client");
+            }
+
+            @Override
+            public void failed(Throwable ex, Object attachment) { ... }
+        });
+
+        @Override
+            public void failed(Throwable ex, Object attachment) { ... }
+    }
+});
+```
+
+#### AsynchronousServerSocketChannel - future 방식
+```java
+var serverSocketChannel = AsynchronousServerSocketChannel.open();
+var addr = new InetSocketAddress("localhost", 8080);
+serverSocketChannel.bind(addr);
+
+// 콜백방식과 달리 Future를 바로 반환.
+Future<AsynchronousSocketChannel> clientSocketFuture = serverSocketChannel.accpet();
+// Future 완료까지 대기.
+while (!clientSocketFuture.isDone()) {
+    Thread.sleep(100);
+    log.info("Waiting...");
+}
+
+// Future가 준비되어 읽기 시작
+var clientSocket = clientSocketFuture.get();
+
+var requestBuffer = ByteBuffer.allocateDirect(1024);
+Future<Integer> channelRead = clientSocket.read(requestBuffer);
+while (!channelRead.isDone()) {
+    log.info("Reading...");
+}
+
+requestBufer.flip();
+var request = StandardCharsets.UTF_8.decode(requestBuffer);
+log.info("request: {}", request);
+
+var response = "This is server.";
+var responseBuffer = ByteBuffer.wrap(response.getBytes());
+clientSocket.write(responseBuffer);
+clientSocket.close();
+```
+
+## JAVA AIO의 다음.
+Java NIO를 사용하며 논블록킹이 되었지만 여전히 찝찝한 것들이 남아있었다.
+응답 대기를 위한 while문을 사용을 좀 더 최적하기 위해서는?
+=> reactor pattern
