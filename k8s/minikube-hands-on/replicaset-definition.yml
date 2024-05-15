@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  labels:
+    app: mywebsite
+    tier: frontend
+spec:
+  replicas: 4
+  # pod definition이 위치한다.(apiVersion, kind 속성 제외)
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+  # replica의 대상을 Pod의 label을 통하여 지정.
+  selector:
+    matchLabels:
+        app: myapp
