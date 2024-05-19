@@ -12,10 +12,13 @@
 - kubectl explain rs
 #### kubectl get 
 - kubectl get pods
-- kubectl get rs
-- kubectl get deploy
+- kubectl get resultset\[rs\]
+- kubectl get deployment\[deploy\]
+- kubectl get service\[svc\]
 - kubectl get all
   - deployments, replicaset, pods 모두 한번에 볼 수 있음.
+- kubectl get pods,svc\[,...\]
+  - comma separator로 나열식으로 지정하여 명령도 가능.
 #### kubcetl describe
 - kubectl describe replicaset {replica-set-name}
   - namespace/selector condition/pods status/pod template/events 등 상세 확인 가능.
@@ -36,6 +39,7 @@
 - kubectl scale rs {replica-set-name} --replicas={number}
   - replicaset의 스케일링 pods 수를 조정
   - 'kubectl edit rs {replica-set-name}'을 통해 definition yml 파일로 접근하여 spec.replicas를 조정하는 것과 같은 효과
+- kubectl scale deployment {deployment-name} --replicas={number}
 #### kubectl rollout
 - deployment의 revision을 만들고 deployment strategy에 따라 update/rollback을 가능하게 함.
 - kubectl rollout status {deployment-name} 

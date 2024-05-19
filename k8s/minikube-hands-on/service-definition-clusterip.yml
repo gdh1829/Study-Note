@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metatdata:
+  name: back-end
+spec:
+  type: ClusterIP # 타입 생략가능. 미지정시 디폴트는 ClusterIP로 인식
+  ports:
+  - port: 80 
+    targetPort: 80
+  selector: # 어떤 서비스와 연결할지 레이블로 맵핑
+    app: myapp
+    type: back-end
