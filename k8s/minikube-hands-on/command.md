@@ -11,7 +11,8 @@
 #### kubectl explain
 - kubectl explain rs
 #### kubectl get 
-- kubectl get pods
+- kubectl get pods 
+  - 옵션 -o wide: 추가 디테일 정보를 출력해서 보여줌.(ex. NODE 정보 등이 포함됨)
 - kubectl get resultset\[rs\]
 - kubectl get deployment\[deploy\]
 - kubectl get service\[svc\]
@@ -25,6 +26,10 @@
 - kubectl describe {kind} {name}
   - kind: ex. pods/replicaset/deployments
   - name: 해당 타입으로 생성된 이름
+#### kubectl run 
+- ex. kubectl run redis --image=redis --dry-run=client -o yaml
+  - redis 이미지를 이용하여 redis pod을 만드는 커맨드로서 dry-run 모드로서 output은 yaml 포멧.
+  - 위 커맨드에 대한 definition yaml 파일 포멧을 출력해줌.
 #### kubectl create/delete/edit
 - kubectl delete pod {pod-name}
 - kubectl create 
@@ -39,7 +44,11 @@
 - kubectl scale rs {replica-set-name} --replicas={number}
   - replicaset의 스케일링 pods 수를 조정
   - 'kubectl edit rs {replica-set-name}'을 통해 definition yml 파일로 접근하여 spec.replicas를 조정하는 것과 같은 효과
+  - 참고
+    - kubectl scale --replicas={number} {replicaset-definition.yaml}도 동일한 효과를 갖지만, 이 경우 사용중인 replicaset-definition.yaml 파일의 replicas의 정의를 자동으로 바꿔주진 않음.
 - kubectl scale deployment {deployment-name} --replicas={number}
+#### kubectl replace
+- ex. kubectl replace -f replicaset-definition.yaml
 #### kubectl rollout
 - deployment의 revision을 만들고 deployment strategy에 따라 update/rollback을 가능하게 함.
 - kubectl rollout status {deployment-name} 
