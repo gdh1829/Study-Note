@@ -65,7 +65,12 @@
   - 새 rollout이 트리거 되고, new revision of the deployment가 생성됨.
   - 참고,
     - deployment-definition yaml 파일에서 container image를 수정하여 저장 후, apply로 적용한 것과 유사하게 `kubectl set image deployment {deployment-name} {container-name}={new-image-name}`의 커맨드를 통해서도 적용은 가능하다. 다만, 이런 방식을 사용할 경우, actual deployment configuration과 definition yaml파일에는 변경 사항이 반영되지 않아 불일치하는 괴리가 생긴다.
-
+#### kubectl get events -o wide
+- 이벤트 조회
+#### kubectl logs {scheduler-name} --name-space={name-space}
+- 로그 조회
+#### kubectl top node/pod
+- node/pod의 컴퓨터 리소스 소비 뷰
 
 
 temp memo
