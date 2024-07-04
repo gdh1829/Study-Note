@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  creationTimestamp: null
+  labels:
+    app: datadog-agent
+  name: datadog-agent
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: datadog-agent
+    template:
+      metadata:
+        creationTimestamp: null
+        labels: 
+          app: datadog-agent
+      spec:
+        containers:
+        - image: public.ecr.aws/datadog/agent:latest
+          name: datadog-agent
+          resource: {}
