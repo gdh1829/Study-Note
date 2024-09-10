@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: developer
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list", "get", "create", "update", "delete"]
+  # 같은 리소스 내에서도 특별히 구분하고 싶은 경우
+  # resourceNames: ["blue", "orange"]
+- apiGroups: [""]
+  resources: ["ConfigMap"]
+  verbs: ["create"]
