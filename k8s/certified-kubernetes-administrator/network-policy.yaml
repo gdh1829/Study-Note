@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+# 네트워크 폴리시는 쿠버네티스 클러스터에 구현된 네트워크 솔루션으로 강제 된다, 모든 네트워크 솔루션이 지원하는 것은 아님.
+# NetworkPolicy를 지원하는 솔루션: Kube-router, Calico, Romana, Weave-net
+# 미지원 솔루션: Flannel
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+      namespaceSelector:
+        matchLabels:
+          name: prod
+    ports:
+    - protocol: TCP
+      port: 3306
