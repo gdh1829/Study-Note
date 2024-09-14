@@ -11,14 +11,27 @@ spec:
       role: db
   policyTypes:
   - Ingress
+  - Egress
   ingress:
   - from:
+    # 1st와 2nd rule은 서로 or 관계이고, 같은 rule 안에서는 and 관계.
+    # 1st rule -> api-pod이면서 namespace가 prod인 파드에서의 접근만 허용.
     - podSelector:
         matchLabels:
           name: api-pod
       namespaceSelector:
         matchLabels:
           name: prod
+    # 2nd rule -> 특정 ipBlock에서만 접근 가능.
+    - ipBlock:
+        cidr: 192.168.5.10/32
     ports:
     - protocol: TCP
       port: 3306
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 192.168.6.10/32
+    ports:
+    - protocol: TCP
+      port: 80
